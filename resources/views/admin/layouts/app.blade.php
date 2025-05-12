@@ -60,6 +60,7 @@
     <script src="{{ asset('admin-template/js/chartist.min.js') }}"></script>
     <script src="{{ asset('admin-template/js/chartist-plugin-tooltip.min.js') }}"></script>
     <script src="{{ asset('admin-template/js/dashboard1.js') }}"></script>
+    <script src="{{ asset('js/app.jss') }}"></script>
 
     @stack('scripts') {{-- Untuk menambahkan script dari child blade --}}
 </body>

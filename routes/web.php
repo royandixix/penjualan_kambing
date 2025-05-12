@@ -26,8 +26,12 @@ Route::get('/admin', function (){
 });
 
 
-Route::get('/admin/kambing', [KambingController::class, 'index'])->name('admin.dashboard');
-Route::get('/admin/kambing', [KambingController::class, 'index'])->name('admin.dashboard');
+Route::get('/admin/kambing/index', [KambingController::class, 'index'])->name('admin.kambing.index');
+Route::get('/admin/kambing/tambah', [KambingController::class, 'create'])->name('admin.kambing.tambah');
+
+
+Route::post('/admin/kambing', [KambingController::class, 'store'])->name('admin.kambing.store');
+
 
 
 
