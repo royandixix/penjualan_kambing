@@ -28,9 +28,12 @@ Route::get('/admin', function (){
 
 Route::get('/admin/kambing/index', [KambingController::class, 'index'])->name('admin.kambing.index');
 Route::get('/admin/kambing/tambah', [KambingController::class, 'create'])->name('admin.kambing.tambah');
-
-
+Route::get('/admin/kambing/edit', [KambingController::class, 'edit'])->name('admin.kambing.edit');
 Route::post('/admin/kambing', [KambingController::class, 'store'])->name('admin.kambing.store');
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::resource('kambing', KambingController::class);
+});
+
 
 
 
