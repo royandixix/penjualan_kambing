@@ -56,5 +56,22 @@
                 <span class="hide-menu">Register</span>
             </a>
         </li>
+
+        <li class="sidebar-item">
+            <a class="sidebar-link waves-effect waves-dark sidebar-link" href="#" 
+               onclick="event.preventDefault(); document.getElementById('logout-form').submit();" 
+               aria-expanded="false">
+                <i class="mdi mdi-logout"></i>
+                <span class="hide-menu">Logout</span>
+            </a>
+        
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                @csrf
+            </form>
+        </li>
+        
+
+       
+        
     </ul>
 </nav>

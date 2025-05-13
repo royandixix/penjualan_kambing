@@ -1,92 +1,120 @@
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Signin Template · Bootstrap v5.3</title>
+    <title>Login | Kamberu</title>
 
-    <!-- Bootstrap core CSS -->
+    {{-- Bootstrap CSS --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
+    {{-- Toastr CSS --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+    {{-- Style tambahan --}}
     <style>
-        body {
-            animation: fadeIn 1s ease-in-out;
+        html, body {
+            height: 100%;
         }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .form-signin {
+            max-width: 330px;
+            padding: 1rem;
+            margin: auto;
         }
-
-        .btn {
-            transition: background-color 0.3s ease, transform 0.2s ease;
+        .form-signin .form-floating:focus-within {
+            z-index: 2;
         }
-
-        .btn:hover {
-            transform: scale(1.03);
+        .form-signin input[type="email"] {
+            margin-bottom: -1px;
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
         }
-
-        .form-control {
-            transition: box-shadow 0.3s ease;
-        }
-
-        .form-control:focus {
-            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        .form-signin input[type="password"] {
+            margin-bottom: 10px;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
         }
     </style>
 </head>
+<body class="d-flex align-items-center py-4 bg-body-tertiary">
 
-<body class="d-flex align-items-center justify-content-center min-vh-100">
-    <main class="form-signin text-center">
-        <form method="POST" action="{{ route('login') }}">
-            @csrf
+<main class="form-signin w-100 m-auto">
+    <form method="POST" action="{{ route('login') }}">
+        @csrf
 
+        <h1 class="h3 mb-3 fw-normal text-center">Silakan Login</h1>
 
-            <img src="{{ asset ('') }}" alt="">
-            {{-- <img class="mb-4" src="https://getbootstrap.com/docs/5.3/assets/brand/bootstrap-logo.svg"
-                alt="Bootstrap logo" width="72" height="57">
-            <h1 class="h3 mb-3 fw-normal">Login Disinin</h1> --}}
+        {{-- Email Input --}}
+        <div class="form-floating">
+            <input type="email" name="email" class="form-control" id="floatingInput" placeholder="name@example.com" required autofocus>
+            <label for="floatingInput">Email address</label>
+        </div>
 
-            <div class="form-floating mb-3">
-                <input type="email" name="email" class="form-control" id="floatingInput"
-                    placeholder="name@example.com" required>
-                <label for="floatingInput">Email address</label>
+        {{-- Password Input --}}
+        <div class="form-floating">
+            <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Password" required>
+            <label for="floatingPassword">Password</label>
+        </div>
+
+        {{-- Error Message (jika ada) --}}
+        @if(session('error'))
+            <div class="alert alert-danger mt-2">
+                {{ session('error') }}
             </div>
+        @endif
 
-            <div class="form-floating mb-3">
-                <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Password"
-                    required>
-                <label for="floatingPassword">Password</label>
-            </div>
+        <button class="w-100 btn btn-lg btn-primary mt-3" type="submit">Login</button>
 
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    {{ $errors->first() }}
-                </div>
-            @endif
+        <p class="mt-3 text-center">
+            Belum punya akun? <a href="{{ route('register') }}">Daftar di sini</a>
+        </p>
+
+        <p class="mt-5 mb-3 text-muted text-center">&copy; Kamberu 2025</p>
+    </form>
+</main>
+
+{{-- jQuery (dibutuhkan oleh Toastr) --}}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+{{-- Toastr JS --}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+{{-- Bootstrap JS --}}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<style>
+    #toast-container {
+        bottom: 50px !important;
+        top: 100px !important;
+        left: 100px% !important;
+        transform: translateX(-50%) !important;
+    }
+</style>
+
+<script>
+    toastr.options = {
+        "closeButton": true,
+        "progressBar": true,
+        "positionClass": "toast-bottom-right", 
+        "timeOut": "5000"
+    }
+    @if (Session::has('success'))
+        toastr.success("{{ Session::get('success') }}");
+    @endif
+
+    @if (Session::has('error'))
+        toastr.error("{{ Session::get('error') }}");
+    @endif
+
+    @if (Session::has('info'))
+        toastr.info("{{ Session::get('info') }}");
+    @endif
+
+    @if (Session::has('warning'))
+        toastr.warning("{{ Session::get('warning') }}");
+    @endif
+</script>
 
 
-
-            <button class="btn btn-primary w-100 py-2" type="submit">Login</button>
-           
-            <p class="mt-3">
-                Belum punya akun? <a href="{{ route('register') }}">Daftar di sini</a>
-            </p>
-
-            <p class="mt-5 mb-3 text-body-secondary">&copy; 2017–2025</p>
-
-        </form>
-    </main>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
 </body>
-
 </html>
