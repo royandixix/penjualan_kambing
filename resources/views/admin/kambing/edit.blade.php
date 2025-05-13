@@ -42,10 +42,11 @@
                 <label for="jenis_kelamin">Jenis Kelamin</label>
                 <select name="jenis_kelamin" class="form-control" required>
                     <option value="">-- Pilih Jenis Kelamin --</option>
-                    <option value="Jantan" {{ old('jenis_kelamin', $kambing->jenis_kelamin) == 'Jantan' ? 'selected' : '' }}>Jantan</option>
-                    <option value="Betina" {{ old('jenis_kelamin', $kambing->jenis_kelamin) == 'Betina' ? 'selected' : '' }}>Betina</option>
+                    <option value="Jantan" {{ (old('jenis_kelamin') ?? $kambing->jenis_kelamin) == 'Jantan' ? 'selected' : '' }}>Jantan</option>
+                    <option value="Betina" {{ (old('jenis_kelamin') ?? $kambing->jenis_kelamin) == 'Betina' ? 'selected' : '' }}>Betina</option>
                 </select>
             </div>
+            
 
             <div class="form-group mb-3">
                 <label for="harga">Harga (Rp)</label>

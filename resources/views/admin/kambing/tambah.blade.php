@@ -6,18 +6,6 @@
     <div class="container-fluid">
         <h4 class="mb-4">Tambah Data Kambing</h4>
 
-        {{-- Validasi Error --}}
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <strong>Oops!</strong> Ada kesalahan pada input:<br><br>
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
         {{-- Form Tambah Kambing --}}
         <form action="{{ route('admin.kambing.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
@@ -33,9 +21,15 @@
             </div>
 
             <div class="form-group mb-3">
-                <label for="berat">Berat (kg)</label>
-                <input type="text" name="berat" id="berat" class="form-control" value="{{ old('berat') }}" required>
+                <label for="berat">Berat</label>
+                <div class="input-group">
+                    <input type="text" name="berat" id="berat" class="form-control" value="{{ old('berat') }}" placeholder="Contoh: 30" required>
+                    <div class="input-group-append">
+                        <span class="input-group-text">kg</span>
+                    </div>
+                </div>
             </div>
+            
 
             <div class="form-group mb-3">
                 <label for="jenis_kelamin">Jenis Kelamin</label>
@@ -48,7 +42,7 @@
 
             <div class="form-group mb-3">
                 <label for="harga">Harga (Rp)</label>
-                <input type="text" name="harga" id="harga" class="form-control" value="{{ old('harga') }}" required>
+                <input type="text" name="harga" id="harga" class="form-control" value="{{ old('harga') }}" placeholder="Contoh: 1500000" required>
             </div>
 
             <div class="form-group mb-3">
@@ -71,41 +65,59 @@
     </div>
 @endsection
 
+<style>
+    #toast-container {
+        bottom: 50px !important;
+        top: 100px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+    }
+</style>
+
 @push('scripts')
+<!-- jQuery dan Toastr -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+
 <script>
+    toastr.options = {
+        "closeButton": true,
+        "progressBar": true,
+        "positionClass": "toast-bottom-center",
+        "timeOut": "3000"
+    };
+
+    @if (session('success'))
+        toastr.success("{{ session('success') }}");
+    @endif
+
+    @if ($errors->any())
+        toastr.error("Ada kesalahan pada input. Periksa kembali formulir!");
+    @endif
+
     const beratInput = document.getElementById('berat');
     const hargaInput = document.getElementById('harga');
 
-    // Format Berat saat mengetik
     beratInput.addEventListener('input', function(e) {
-        let value = e.target.value.replace(/[^\d.]/g, ''); // hanya angka dan titik
-        if (value) {
-            e.target.value = parseFloat(value) + ' kg';
-        } else {
+    let raw = e.target.value.replace(/[^\d.]/g, ''); 
+    e.target.value = raw + 'kg';
+});
+
+    // Format harga jadi Rp
+    hargaInput.addEventListener('input', function (e) {
+        let raw = e.target.value.replace(/[^\d]/g, '');
+        if (raw === '') {
             e.target.value = '';
+        } else {
+            e.target.value = 'Rp ' + Number(raw).toLocaleString('id-ID');
         }
     });
 
-    // Format Harga saat mengetik
-    hargaInput.addEventListener('input', function(e) {
-        let value = e.target.value.replace(/[^\d]/g, ''); // hanya angka
-        if (value) {
-            e.target.value = 'Rp ' + Number(value).toLocaleString('id-ID');
-        } else {
-            e.target.value = '';
-        }
-    });
-
-    // Saat submit, bersihkan "kg" dan "Rp"
-    document.querySelector('form').addEventListener('submit', function() {
-        if (beratInput.value.includes('kg')) {
-            beratInput.value = beratInput.value.replace(/[^\d.]/g, '');
-        }
-
-        if (hargaInput.value.includes('Rp')) {
-            hargaInput.value = hargaInput.value.replace(/[^\d]/g, '');
-        }
+    // Sebelum submit, bersihkan Rp dan pastikan angka
+    document.querySelector('form').addEventListener('submit', function () {
+        hargaInput.value = hargaInput.value.replace(/[^\d]/g, '');
+        beratInput.value = beratInput.value.replace(/[^\d.]/g, '');
     });
 </script>
-
 @endpush

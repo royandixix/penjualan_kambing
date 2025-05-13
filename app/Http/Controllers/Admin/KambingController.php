@@ -11,9 +11,10 @@ class KambingController extends Controller
 {
     public function index()
     {
-        $kambings = Kambing::all();
+        $kambings = Kambing::all(); // Ambil semua data kambing
         return view('admin.kambing.index', compact('kambings'));
     }
+    
 
     public function create()
     {

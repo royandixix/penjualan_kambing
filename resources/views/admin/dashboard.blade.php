@@ -1,4 +1,4 @@
-<!-- resources/views/admin/dashboard.blade.php -->
+{{-- <!-- resources/views/admin/dashboard.blade.php -->
 
 @extends('admin.layouts.app')
 
@@ -211,4 +211,4 @@
         </div> --}}
 
     </div>
-@endsection
+@endsection --}}
