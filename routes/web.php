@@ -12,6 +12,7 @@ use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\KambingController as UserKambingController;
 use App\Http\Controllers\User\KeranjangController;
 use App\Http\Controllers\User\RiwayatController;
+use App\Http\Controllers\User\KambingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,7 +39,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // ====================
 // ADMIN AREA
 // ====================
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
     Route::get('/', [AdminKambingController::class, 'index'])->name('home');
 
     // Kambing
@@ -66,4 +67,13 @@ Route::prefix('user')->middleware('auth')->group(function () {
     Route::get('/kambing', [UserKambingController::class, 'index'])->name('user.kambing');
     Route::get('/keranjang', [KeranjangController::class, 'index'])->name('user.keranjang');
     Route::get('/riwayat', [RiwayatController::class, 'index'])->name('user.riwayat');
+
+    Route::post('/keranjang/tambah/{id}', [KeranjangController::class, 'tambah'])->name('user.keranjang.tambah');
+    Route::get('/kambing/{id}/beli', [KambingController::class, 'beli'])->name('user.beli');
 });
+
+// ====================
+// Public route untuk melihat kambing
+// ====================
+Route::get('/kambing', [App\Http\Controllers\User\KambingController::class, 'index'])->name('user.kambing');
+Route::post('/keranjang/tambah/{id}', [KeranjangController::class, 'tambah'])->name('user.keranjang.tambah');

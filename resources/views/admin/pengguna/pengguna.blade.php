@@ -36,16 +36,16 @@
                         <td>{{ $user->alamat }}</td>
                         <td>{{ ucfirst($user->role) }}</td>
                         <td>
-                            <div class="d-grid gap-2">
+                            <div class="d-flex flex-column">
                                 <a href="{{ route('admin.pengguna.edit', $user->id) }}"
-                                    class="btn btn-sm btn-warning mb-1">
+                                    class="btn btn-sm btn-warning mb-1 w-100">
                                     Edit
                                 </a>
                                 <form action="{{ route('admin.pengguna.destroy', $user->id) }}" method="POST"
                                     onsubmit="return confirm('Yakin ingin menghapus pengguna ini?')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger">
+                                    <button type="submit" class="btn btn-sm btn-danger w-100">
                                         Hapus
                                     </button>
                                 </form>
