@@ -112,7 +112,7 @@
                 <!-- Contoh ikon keranjang -->
                 <li id="ikonKeranjang" class="nav-item position-relative">
                     <a class="nav-link" href="{{ route('user.keranjang') }}">
-                        <i class="bi bi-cart-fill fs-5"></i>
+                        <i class="bi bi-cart-fill fs-5"></i>Keranjang
                     </a>
                 </li>
 

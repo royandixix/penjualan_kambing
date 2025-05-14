@@ -12,7 +12,6 @@ use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\KambingController as UserKambingController;
 use App\Http\Controllers\User\KeranjangController;
 use App\Http\Controllers\User\RiwayatController;
-use App\Http\Controllers\User\KambingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,7 +22,7 @@ use App\Http\Controllers\User\KambingController;
 // ====================
 // Redirect root ke login
 // ====================
-Route::get('/', fn () => redirect()->route('login'));
+Route::get('/', fn() => redirect()->route('login'));
 
 // ====================
 // Login & Register
@@ -64,16 +63,27 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 // ====================
 Route::prefix('user')->middleware('auth')->group(function () {
     Route::get('/', [UserController::class, 'index'])->name('user.index');
+
+    // Kambing
     Route::get('/kambing', [UserKambingController::class, 'index'])->name('user.kambing');
-    Route::get('/keranjang', [KeranjangController::class, 'index'])->name('user.keranjang');
+    Route::get('/kambing/{id}/beli', [UserKambingController::class, 'beli'])->name('user.kambing.beli');
+
+    // Keranjang
+    Route::get('/keranjang', [KeranjangController::class, 'index'])->name('user.keranjang.index');
+    Route::post('/keranjang/tambah/{id}', [KeranjangController::class, 'tambah'])->name('user.keranjang.tambah');
+    Route::delete('/keranjang/{id}', [KeranjangController::class, 'hapus'])->name('user.keranjang.hapus');
+
+    // Riwayat
     Route::get('/riwayat', [RiwayatController::class, 'index'])->name('user.riwayat');
 
-    Route::post('/keranjang/tambah/{id}', [KeranjangController::class, 'tambah'])->name('user.keranjang.tambah');
-    Route::get('/kambing/{id}/beli', [KambingController::class, 'beli'])->name('user.beli');
+    // Checkout
+    Route::get('/checkout', [KeranjangController::class, 'checkout'])->name('user.checkout');
 });
 
 // ====================
-// Public route untuk melihat kambing
+// PUBLIC ROUTES (Tanpa login)
 // ====================
-Route::get('/kambing', [App\Http\Controllers\User\KambingController::class, 'index'])->name('user.kambing');
-Route::post('/keranjang/tambah/{id}', [KeranjangController::class, 'tambah'])->name('user.keranjang.tambah');
+Route::get('/kambing', [UserKambingController::class, 'index'])->name('kambing.public');
+
+// Tambah ke keranjang publik (opsional, jika pengguna tidak login bisa disimpan ke session)
+Route::post('/keranjang/tambah/{id}', [KeranjangController::class, 'tambah'])->name('keranjang.public.tambah');
