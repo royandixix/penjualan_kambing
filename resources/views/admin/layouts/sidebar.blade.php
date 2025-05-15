@@ -26,12 +26,13 @@
         </li>
 
         <li class="sidebar-item">
-            <a class="sidebar-link waves-effect waves-dark sidebar-link" href="icon-material.html"
+            <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{{ route('admin.pesanan.index') }}"
                 aria-expanded="false">
                 <i class="mdi mdi-face"></i>
                 <span class="hide-menu">Pesanan Masuk</span>
             </a>
         </li>
+        
 
         <li class="sidebar-item">
             <a class="sidebar-link waves-effect waves-dark sidebar-link" href="starter-kit.html" aria-expanded="false">

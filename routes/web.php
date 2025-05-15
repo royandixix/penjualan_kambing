@@ -12,6 +12,7 @@ use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\KambingController as UserKambingController;
 use App\Http\Controllers\User\KeranjangController;
 use App\Http\Controllers\User\RiwayatController;
+use App\Http\Controllers\Admin\PesananController;
 
 /*
 |--------------------------------------------------------------------------
@@ -78,6 +79,9 @@ Route::prefix('user')->middleware('auth')->group(function () {
 
     // Checkout
     Route::get('/checkout', [KeranjangController::class, 'checkout'])->name('user.checkout');
+    Route::get('/beli', [UserKambingController::class, 'index'])->name('user.beli');
+    
+
 });
 
 // ====================
@@ -87,3 +91,4 @@ Route::get('/kambing', [UserKambingController::class, 'index'])->name('kambing.p
 
 // Tambah ke keranjang publik (opsional, jika pengguna tidak login bisa disimpan ke session)
 Route::post('/keranjang/tambah/{id}', [KeranjangController::class, 'tambah'])->name('keranjang.public.tambah');
+Route::get('admin/pesanan', [PesananController::class, 'index'])->name('admin.pesanan.index');
