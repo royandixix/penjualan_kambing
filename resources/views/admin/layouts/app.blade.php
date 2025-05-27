@@ -12,6 +12,9 @@
     <link rel="stylesheet" href="{{ asset('admin-template/css/style.min.css') }}">
     <link rel="stylesheet" href="{{ asset('admin-template/css/chartist.min.css') }}">
     <link rel="stylesheet" href="{{ asset('admin-template/css/chartist-plugin-tooltip.css') }}">
+    <link href="https://cdn.materialdesignicons.com/6.5.95/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.materialdesignicons.com/6.5.95/css/materialdesignicons.min.css" rel="stylesheet">
+
     <link rel="stylesheet" href="{{ asset('admin-template/css/materialdesignicons.min.css') }}">
     {{-- Tambah CSS tambahan di sini jika perlu --}}
 

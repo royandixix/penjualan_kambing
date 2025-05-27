@@ -29,7 +29,11 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'role' => fake()->randomElement(['Admin', 'Pembeli']), // <== Tambahkan ini
+            'no_hp' => fake()->phoneNumber(),                      // <== dan ini
+            'alamat' => fake()->address(),                         // <== dan ini
         ];
+        
     }
 
     /**

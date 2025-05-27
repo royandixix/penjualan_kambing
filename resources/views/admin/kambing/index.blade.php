@@ -3,19 +3,62 @@
 @section('title', 'Daftar Kambing')
 
 @section('content')
-    <div class="container-fluid">
-        <h4 class="mb-4">Daftar Kambing</h4>
+<style>
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
 
-        <!-- Tombol Tambah Data -->
-        <div class="mb-3">
-            <a href="{{ route('admin.kambing.tambah') }}" class="btn btn-primary">
-                <i class="mdi mdi-plus"></i> Tambah Data
-            </a>
-        </div>
+    .table {
+        min-width: 1200px;
+    }
 
-        <!-- Tabel Data Kambing -->
-        <table class="table table-bordered">
-            <thead>
+    #toast-container {
+        bottom: 50px !important;
+        top: auto !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+    }
+
+    /* Tombol aksi */
+    .btn-outline-warning:hover {
+        background-color: #ffc107;
+        color: #fff;
+    }
+
+    .btn-outline-danger:hover {
+        background-color: #dc3545;
+        color: #fff;
+    }
+
+    .btn-outline-warning,
+    .btn-outline-danger {
+        transition: all 0.3s ease;
+    }
+
+    /* Gambar tabel */
+    .img-kambing {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+</style>
+
+<div class="container-fluid">
+    <h4 class="mb-4">Daftar Kambing</h4>
+
+    <!-- Tombol Tambah Data -->
+    <div class="mb-3">
+        <a href="{{ route('admin.kambing.tambah') }}" class="btn btn-primary">
+            <i class="mdi mdi-plus"></i> Tambah Data
+        </a>
+    </div>
+
+    <!-- Tabel Data Kambing -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover text-center align-middle">
+            <thead class="table-light">
                 <tr>
                     <th>No</th>
                     <th>Nama</th>
@@ -24,8 +67,8 @@
                     <th>Jenis Kelamin</th>
                     <th>Harga</th>
                     <th>Foto</th>
-                    <th>Deskripsi</th>
-                    <th>Aksi</th>
+                    <th class="">Deskripsi</th>
+                    <th class="text-nowrap">Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -33,30 +76,28 @@
                     <tr>
                         <td>{{ $index + 1 }}</td>
                         <td>{{ $kambing->nama }}</td>
-                        <td>{{ $kambing->umur }} bulan</td>
+                        <td>{{ $kambing->umur }} bln</td>
                         <td>{{ $kambing->berat }} kg</td>
                         <td>{{ $kambing->jenis_kelamin }}</td>
                         <td>Rp {{ number_format($kambing->harga, 0, ',', '.') }}</td>
                         <td>
                             @if ($kambing->foto)
-                                <img src="{{ asset('storage/' . $kambing->foto) }}" alt="{{ $kambing->nama }}" width="80">
+                                <img src="{{ asset('storage/' . $kambing->foto) }}" alt="{{ $kambing->nama }}" class="img-kambing">
                             @else
                                 <em>Belum ada foto</em>
                             @endif
                         </td>
-                        <td>{{ $kambing->deskripsi }}</td>
+                        <td class="text-start">{{ $kambing->deskripsi }}</td>
                         <td>
                             <div class="d-grid gap-2">
-                                <a href="{{ route('admin.kambing.edit', $kambing->id) }}"
-                                    class="btn btn-sm btn-warning btn-block mb-1">
-                                    Edit
+                                <a href="{{ route('admin.kambing.edit', $kambing->id) }}" class="btn btn-sm btn-outline-warning d-flex align-items-center justify-content-center gap-1">
+                                    <i class="mdi mdi-pencil-outline"></i> Edit
                                 </a>
-                                <form action="{{ route('admin.kambing.destroy', $kambing->id) }}" method="POST"
-                                    onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+                                <form action="{{ route('admin.kambing.destroy', $kambing->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger btn-block">
-                                        Hapus
+                                    <button type="submit" class="btn btn-sm btn-outline-danger d-flex align-items-center justify-content-center gap-1">
+                                        <i class="mdi mdi-delete-outline"></i> Hapus
                                     </button>
                                 </form>
                             </div>
@@ -70,27 +111,20 @@
             </tbody>
         </table>
     </div>
+</div>
 @endsection
-<style>
-    #toast-container {
-        bottom: 50px !important;
-        top: 100px !important;
-        left: 100px% !important;
-        transform: translateX(-50%) !important;
-    }
-</style>
 
 @section('scripts')
+    <!-- jQuery & Toastr -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
-    
     <script>
         toastr.options = {
-            "closeButton": true,
-            "progressBar": true,
-            "positionClass": "toast-bottom-center", // Tetap gunakan ini agar base-nya benar
-            "timeOut": "3000"
+            closeButton: true,
+            progressBar: true,
+            positionClass: "toast-bottom-center",
+            timeOut: "3000"
         };
 
         @if (session('success'))

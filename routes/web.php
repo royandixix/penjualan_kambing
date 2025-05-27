@@ -2,17 +2,21 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\User\CheckoutController;
+use App\Http\Controllers\User\QRCodeController;
 
 // Admin Controllers
 use App\Http\Controllers\Admin\KambingController as AdminKambingController;
 use App\Http\Controllers\Admin\PenggunaController;
+use App\Http\Controllers\Admin\PesananController as AdminPesananController;
 
 // User Controllers
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\KambingController as UserKambingController;
 use App\Http\Controllers\User\KeranjangController;
 use App\Http\Controllers\User\RiwayatController;
-use App\Http\Controllers\Admin\PesananController;
+use App\Http\Controllers\User\PesananController as UserPesananController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -30,65 +34,91 @@ Route::get('/', fn() => redirect()->route('login'));
 // ====================
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
-
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register'])->name('register.post');
-
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // ====================
-// ADMIN AREA
+// ADMIN AREA (auth required)
 // ====================
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
     Route::get('/', [AdminKambingController::class, 'index'])->name('home');
 
     // Kambing
-    Route::get('/kambing', [AdminKambingController::class, 'index'])->name('kambing.index');
-    Route::get('/kambing/tambah', [AdminKambingController::class, 'create'])->name('kambing.tambah');
-    Route::post('/kambing', [AdminKambingController::class, 'store'])->name('kambing.store');
-    Route::get('/kambing/edit/{id}', [AdminKambingController::class, 'edit'])->name('kambing.edit');
-    Route::put('/kambing/update/{id}', [AdminKambingController::class, 'update'])->name('kambing.update');
-    Route::delete('/kambing/destroy/{id}', [AdminKambingController::class, 'destroy'])->name('kambing.destroy');
+    Route::prefix('kambing')->name('kambing.')->group(function () {
+        Route::get('/', [AdminKambingController::class, 'index'])->name('index');
+        Route::get('/tambah', [AdminKambingController::class, 'create'])->name('tambah');
+        Route::post('/', [AdminKambingController::class, 'store'])->name('store');
+        Route::get('/edit/{id}', [AdminKambingController::class, 'edit'])->name('edit');
+        Route::put('/update/{id}', [AdminKambingController::class, 'update'])->name('update');
+        Route::delete('/destroy/{id}', [AdminKambingController::class, 'destroy'])->name('destroy');
+    });
 
     // Pengguna
-    Route::get('/pengguna', [PenggunaController::class, 'index'])->name('pengguna.index');
-    Route::get('/pengguna/tambah', [PenggunaController::class, 'create'])->name('pengguna.tambah');
-    Route::post('/pengguna', [PenggunaController::class, 'store'])->name('pengguna.store');
-    Route::get('/pengguna/edit/{id}', [PenggunaController::class, 'edit'])->name('pengguna.edit');
-    Route::put('/pengguna/update/{id}', [PenggunaController::class, 'update'])->name('pengguna.update');
-    Route::delete('/pengguna/destroy/{id}', [PenggunaController::class, 'destroy'])->name('pengguna.destroy');
+    Route::prefix('pengguna')->name('pengguna.')->group(function () {
+        Route::get('/', [PenggunaController::class, 'index'])->name('index');
+        Route::get('/tambah', [PenggunaController::class, 'create'])->name('tambah');
+        Route::post('/', [PenggunaController::class, 'store'])->name('store');
+        Route::get('/edit/{id}', [PenggunaController::class, 'edit'])->name('edit');
+        Route::put('/update/{id}', [PenggunaController::class, 'update'])->name('update');
+        Route::delete('/destroy/{id}', [PenggunaController::class, 'destroy'])->name('destroy');
+    });
+
+    // Pesanan
+    Route::prefix('pesanan')->name('pesanan.')->group(function () {
+        Route::get('/', [AdminPesananController::class, 'index'])->name('index');
+        Route::get('/{id}', [AdminPesananController::class, 'show'])->name('show');
+        Route::put('/{id}/status', [AdminPesananController::class, 'updateStatus'])->name('updateStatus');
+        Route::delete('/{id}', [AdminPesananController::class, 'destroy'])->name('destroy');
+    });
 });
 
 // ====================
-// USER (PEMBELI) AREA
+// USER AREA (auth required)
 // ====================
-Route::prefix('user')->middleware('auth')->group(function () {
-    Route::get('/', [UserController::class, 'index'])->name('user.index');
+Route::prefix('user')->name('user.')->middleware(['auth'])->group(function () {
+    Route::get('/', [UserController::class, 'index'])->name('index');
 
     // Kambing
-    Route::get('/kambing', [UserKambingController::class, 'index'])->name('user.kambing');
-    Route::get('/kambing/{id}/beli', [UserKambingController::class, 'beli'])->name('user.kambing.beli');
+    Route::get('/kambing', [UserKambingController::class, 'index'])->name('kambing');
+    Route::get('/kambing/{id}/beli', [UserKambingController::class, 'beli'])->name('kambing.beli');
 
     // Keranjang
-    Route::get('/keranjang', [KeranjangController::class, 'index'])->name('user.keranjang.index');
-    Route::post('/keranjang/tambah/{id}', [KeranjangController::class, 'tambah'])->name('user.keranjang.tambah');
-    Route::delete('/keranjang/{id}', [KeranjangController::class, 'hapus'])->name('user.keranjang.hapus');
-
-    // Riwayat
-    Route::get('/riwayat', [RiwayatController::class, 'index'])->name('user.riwayat');
+    Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang.index');
+    Route::post('/keranjang/tambah/{id}', [KeranjangController::class, 'tambah'])->name('keranjang.tambah');
+    Route::delete('/keranjang/{id}', [KeranjangController::class, 'hapus'])->name('keranjang.hapus');
 
     // Checkout
-    Route::get('/checkout', [KeranjangController::class, 'checkout'])->name('user.checkout');
-    Route::get('/beli', [UserKambingController::class, 'index'])->name('user.beli');
-    
+    // Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    // Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout');
+    // Route::post('/user/checkout', [CheckoutController::class, 'checkout'])->name('user.user.checkout');
+    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout');
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+  
 
+    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout'); // ✅ benar
+  
+
+    // Riwayat
+    Route::get('/riwayat', [RiwayatController::class, 'index'])->name('riwayat');
+
+    // Pesanan
+    Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang.index');
+
+    Route::get('/pesanan', [UserPesananController::class, 'index'])->name('pesanan');
+    Route::get('/beli/{id}', [UserPesananController::class, 'beli'])->name('beli');
+    Route::post('/beli/{id}', [UserPesananController::class, 'beli'])->name('beli.post');
+
+    // QR Code
+    Route::get('/qrcode/{id}', [QRCodeController::class, 'generate'])->name('qrcode');
+    Route::get('/qrcode/generate/{id}', [QRCodeController::class, 'generate'])->name('qrcode.generate');
+    Route::get('/qrcode/show/{id}', [QRCodeController::class, 'show'])->name('qrcode.show');
 });
 
 // ====================
 // PUBLIC ROUTES (Tanpa login)
 // ====================
 Route::get('/kambing', [UserKambingController::class, 'index'])->name('kambing.public');
-
-// Tambah ke keranjang publik (opsional, jika pengguna tidak login bisa disimpan ke session)
+Route::get('/beli/{id}', [UserPesananController::class, 'beli'])->name('beli.public');
 Route::post('/keranjang/tambah/{id}', [KeranjangController::class, 'tambah'])->name('keranjang.public.tambah');
-Route::get('admin/pesanan', [PesananController::class, 'index'])->name('admin.pesanan.index');
+Route::delete('/keranjang/{id}', [KeranjangController::class, 'hapus'])->name('keranjang.public.hapus');
