@@ -32,4 +32,6 @@ class Kambing extends Model
         return $this->belongsToMany(Pesanan::class, 'detail_pesanans')
                     ->withPivot('jumlah', 'subtotal');
     }
+
+    
 }

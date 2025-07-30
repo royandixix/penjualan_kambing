@@ -13,6 +13,8 @@ class KeranjangController extends Controller
         return view('user.keranjang.keranjang');
     }
 
+    
+
     public function checkout()
     {
         $keranjang = session('keranjang', []);

@@ -70,7 +70,7 @@ class PenggunaController extends Controller
             'role'   => $request->role,
         ]);
 
-        return redirect()->route('pengguna.index')->with('success', 'Data Pengguna Diperbarui');
+        return redirect()->route('admin.pengguna.index')->with('success', 'Data Pengguna Diperbarui');
     }
 
     public function destroy($id)
@@ -80,4 +80,7 @@ class PenggunaController extends Controller
 
         return redirect()->route('pengguna.index')->with('success', 'Pengguna berhasil dihapus');
     }
+
+
+    
 }

@@ -20,7 +20,7 @@ class QRCodeController extends Controller
         $qrData = 'https://example.com/kambing/' . $kambing->id; // Ganti dengan URL real
         $filename = $kambing->id . '.png';
 
-        // Simpan QR code ke storage/app/public/qrcode
+        // Simpan QR code ke storage/app    /public/qrcode
         Storage::disk('public')->put('qrcode/' . $filename, QrCode::format('png')->size(300)->generate($qrData));
 
         // Simpan nama file ke database (opsional)
@@ -33,6 +33,8 @@ class QRCodeController extends Controller
             'url' => asset('storage/qrcode/' . $filename)
         ]);
     }
+
+    
 
     /**
      * Menampilkan gambar QR code dari storage
@@ -48,4 +50,8 @@ class QRCodeController extends Controller
 
         return response()->file($path);
     }
+
+
+
+    
 }

@@ -18,5 +18,7 @@ return new class extends Migration {
             $table->string('metode_bayar')->nullable(false)->change(); // rollback ke tidak nullable
         });
     }
+
+    
 };
 

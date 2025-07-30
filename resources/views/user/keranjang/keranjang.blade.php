@@ -120,6 +120,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const infoMetode = document.getElementById('infoMetode');
     const uploadBukti = document.getElementById('uploadBukti');
 
+    const mainBukti = document.get
+
+
     function updateTotal() {
         let total = 0;
         let anyChecked = false;
@@ -136,6 +139,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 input.value = cb.value;
                 input.classList.add('dynamic-item-input');
                 formCheckout.appendChild(input);
+
+                
             }
         });
 

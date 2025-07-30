@@ -49,11 +49,11 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email'    => 'required|email',
+            'name'     => 'required|string',
             'password' => 'required',
         ]);
 
-        if (Auth::attempt($credentials)) {
+        if (Auth::attempt(['name' => $credentials['name'], 'password' => $credentials['password']])) {
             $request->session()->regenerate();
             $user = Auth::user();
 
@@ -67,7 +67,7 @@ class AuthController extends Controller
             }
         }
 
-        return redirect()->back()->with('error', 'Email atau password salah.');
+        return redirect()->back()->with('error', 'Nama atau password salah.');
     }
 
     // Logout

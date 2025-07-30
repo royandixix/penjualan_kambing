@@ -9,6 +9,8 @@ use App\Http\Controllers\User\QRCodeController;
 use App\Http\Controllers\Admin\KambingController as AdminKambingController;
 use App\Http\Controllers\Admin\PenggunaController;
 use App\Http\Controllers\Admin\PesananController as AdminPesananController;
+use App\Http\Controllers\Admin\PembayaranController;
+use App\Http\Controllers\Admin\LaporanController;
 
 // User Controllers
 use App\Http\Controllers\User\UserController;
@@ -17,7 +19,6 @@ use App\Http\Controllers\User\KeranjangController;
 use App\Http\Controllers\User\RiwayatController;
 use App\Http\Controllers\User\PesananController as UserPesananController;
 
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -25,12 +26,7 @@ use App\Http\Controllers\User\PesananController as UserPesananController;
 */
 
 // ====================
-// Redirect root ke login
-// ====================
-Route::get('/', fn() => redirect()->route('login'));
-
-// ====================
-// Login & Register
+// AUTH ROUTES
 // ====================
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
@@ -39,9 +35,13 @@ Route::post('/register', [AuthController::class, 'register'])->name('register.po
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // ====================
-// ADMIN AREA (auth required)
+// ADMIN AREA (auth + role:admin)
 // ====================
-Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+Route::prefix('admin')
+    ->name('admin.')
+    ->middleware(['auth'])
+    ->group(function () {
+
     Route::get('/', [AdminKambingController::class, 'index'])->name('home');
 
     // Kambing
@@ -71,54 +71,51 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         Route::put('/{id}/status', [AdminPesananController::class, 'updateStatus'])->name('updateStatus');
         Route::delete('/{id}', [AdminPesananController::class, 'destroy'])->name('destroy');
     });
-});
+
+    // Pembayaran
+    Route::prefix('pembayaran')->name('pembayaran.')->group(function () {
+        Route::get('/', [PembayaranController::class, 'index'])->name('index');
+        Route::get('/tambah', [PembayaranController::class, 'create'])->name('tambah');
+        Route::post('/tambah', [PembayaranController::class, 'store'])->name('store');
+        Route::get('/{id}', [PembayaranController::class, 'show'])->name('show');
+    });
+
+    // Laporan
+    Route::prefix('laporan')->name('laporan.')->group(function () {
+        Route::get('/', [LaporanController::class, 'index'])->name('index');
+        Route::get('/cetak', [LaporanController::class, 'cetak'])->name('cetak');
+    });
+
+}); // ✅ penutup grup admin
 
 // ====================
-// USER AREA (auth required)
+// USER AREA (auth + role:user)
 // ====================
-Route::prefix('user')->name('user.')->middleware(['auth'])->group(function () {
+Route::prefix('user')
+    ->name('user.')
+    ->middleware(['auth'])
+    ->group(function () {
+
     Route::get('/', [UserController::class, 'index'])->name('index');
 
-    // Kambing
     Route::get('/kambing', [UserKambingController::class, 'index'])->name('kambing');
     Route::get('/kambing/{id}/beli', [UserKambingController::class, 'beli'])->name('kambing.beli');
 
-    // Keranjang
     Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang.index');
     Route::post('/keranjang/tambah/{id}', [KeranjangController::class, 'tambah'])->name('keranjang.tambah');
     Route::delete('/keranjang/{id}', [KeranjangController::class, 'hapus'])->name('keranjang.hapus');
 
-    // Checkout
-    // Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-    // Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout');
-    // Route::post('/user/checkout', [CheckoutController::class, 'checkout'])->name('user.user.checkout');
-    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout');
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-  
+    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout');
 
-    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout'); // ✅ benar
-  
-
-    // Riwayat
     Route::get('/riwayat', [RiwayatController::class, 'index'])->name('riwayat');
-
-    // Pesanan
-    Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang.index');
 
     Route::get('/pesanan', [UserPesananController::class, 'index'])->name('pesanan');
     Route::get('/beli/{id}', [UserPesananController::class, 'beli'])->name('beli');
     Route::post('/beli/{id}', [UserPesananController::class, 'beli'])->name('beli.post');
 
-    // QR Code
     Route::get('/qrcode/{id}', [QRCodeController::class, 'generate'])->name('qrcode');
     Route::get('/qrcode/generate/{id}', [QRCodeController::class, 'generate'])->name('qrcode.generate');
     Route::get('/qrcode/show/{id}', [QRCodeController::class, 'show'])->name('qrcode.show');
-});
 
-// ====================
-// PUBLIC ROUTES (Tanpa login)
-// ====================
-Route::get('/kambing', [UserKambingController::class, 'index'])->name('kambing.public');
-Route::get('/beli/{id}', [UserPesananController::class, 'beli'])->name('beli.public');
-Route::post('/keranjang/tambah/{id}', [KeranjangController::class, 'tambah'])->name('keranjang.public.tambah');
-Route::delete('/keranjang/{id}', [KeranjangController::class, 'hapus'])->name('keranjang.public.hapus');
+}); // ✅ penutup grup user

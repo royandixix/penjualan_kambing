@@ -5,116 +5,110 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login | Kamberu</title>
 
-    {{-- Bootstrap CSS --}}
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    {{-- Toastr CSS --}}
+    <!-- Toastr CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
-    {{-- Style tambahan --}}
     <style>
         html, body {
             height: 100%;
+            background-image: url('{{ asset('img/kambing.jpg') }}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
+
         .form-signin {
-            max-width: 330px;
-            padding: 1rem;
-            margin: auto;
+            max-width: 360px;
+            padding: 2rem;
+            margin: 200px auto 0;
+            border-radius: 12px;
         }
+
         .form-signin .form-floating:focus-within {
             z-index: 2;
         }
-        .form-signin input[type="email"] {
-            margin-bottom: -1px;
-            border-bottom-right-radius: 0;
-            border-bottom-left-radius: 0;
-        }
-        .form-signin input[type="password"] {
-            margin-bottom: 10px;
-            border-top-left-radius: 0;
-            border-top-right-radius: 0;
+
+        #toast-container {
+            bottom: 50px !important;
+            top: auto !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
         }
     </style>
 </head>
-<body class="d-flex align-items-center py-4 bg-body-tertiary">
 
-<main class="form-signin w-100 m-auto">
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+<body class="d-flex align-items-center py-4">
 
-        <h1 class="h3 mb-3 fw-normal text-center">Silakan Login</h1>
+    <main class="form-signin w-100 m-auto">
+        <form method="POST" action="{{ route('login') }}">
+            @csrf
 
-        {{-- Email Input --}}
-        <div class="form-floating">
-            <input type="email" name="email" class="form-control" id="floatingInput" placeholder="name@example.com" required autofocus>
-            <label for="floatingInput">Email address</label>
-        </div>
+            <h1 class="h3 mb-4 fw-bold text-center">Silakan Login</h1>
 
-        {{-- Password Input --}}
-        <div class="form-floating">
-            <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Password" required>
-            <label for="floatingPassword">Password</label>
-        </div>
-
-        {{-- Error Message (jika ada) --}}
-        @if(session('error'))
-            <div class="alert alert-danger mt-2">
-                {{ session('error') }}
+            {{-- Nama Pengguna --}}
+            <div class="form-floating mb-2">
+                <input type="text" name="name" class="form-control" id="floatingName" placeholder="Nama Pengguna" required autofocus>
+                <label for="floatingName">Nama Pengguna</label>
             </div>
+
+            {{-- Password --}}
+            <div class="form-floating mb-3">
+                <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Password" required>
+                <label for="floatingPassword">Password</label>
+            </div>
+
+            {{-- Tombol Login --}}
+            <button class="w-100 btn btn-lg btn-primary mb-3" type="submit">Login</button>
+
+            {{-- Link ke Register --}}
+            <p class="text-center text-white">
+                Belum punya akun? <a href="{{ route('register') }}">Daftar di sini</a>
+            </p>
+
+            <p class="mt-5 mb-3 text-center text-white">&copy; Kamberu 2025</p>
+        </form>
+    </main>
+
+    <!-- Script -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <script>
+        // Konfigurasi Toastr
+        toastr.options = {
+            closeButton: true,
+            progressBar: true,
+            positionClass: "toast-bottom-right",
+            timeOut: 5000,
+            showMethod: "fadeIn",
+            hideMethod: "fadeOut",
+            showEasing: "swing",
+            hideEasing: "linear",
+            showDuration: 600,
+            hideDuration: 300
+        };
+
+        // Flash session dari Laravel
+        @if(Session::has('success'))
+            toastr.success("🎉 {{ Session::get('success') }}", "Berhasil");
         @endif
 
-        <button class="w-100 btn btn-lg btn-primary mt-3" type="submit">Login</button>
+        @if(Session::has('error'))
+            toastr.error("😢 {{ Session::get('error') }}", "Gagal");
+        @endif
 
-        <p class="mt-3 text-center">
-            Belum punya akun? <a href="{{ route('register') }}">Daftar di sini</a>
-        </p>
+        @if(Session::has('info'))
+            toastr.info("ℹ️ {{ Session::get('info') }}", "Info");
+        @endif
 
-        <p class="mt-5 mb-3 text-muted text-center">&copy; Kamberu 2025</p>
-    </form>
-</main>
-
-{{-- jQuery (dibutuhkan oleh Toastr) --}}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-{{-- Toastr JS --}}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-
-{{-- Bootstrap JS --}}
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<style>
-    #toast-container {
-        bottom: 50px !important;
-        top: 100px !important;
-        left: 100px% !important;
-        transform: translateX(-50%) !important;
-    }
-</style>
-
-<script>
-    toastr.options = {
-        "closeButton": true,
-        "progressBar": true,
-        "positionClass": "toast-bottom-right", 
-        "timeOut": "5000"
-    }
-    @if (Session::has('success'))
-        toastr.success("{{ Session::get('success') }}");
-    @endif
-
-    @if (Session::has('error'))
-        toastr.error("{{ Session::get('error') }}");
-    @endif
-
-    @if (Session::has('info'))
-        toastr.info("{{ Session::get('info') }}");
-    @endif
-
-    @if (Session::has('warning'))
-        toastr.warning("{{ Session::get('warning') }}");
-    @endif
-</script>
-
+        @if(Session::has('warning'))
+            toastr.warning("⚠️ {{ Session::get('warning') }}", "Peringatan");
+        @endif
+    </script>
 
 </body>
 </html>
