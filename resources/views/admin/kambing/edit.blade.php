@@ -24,8 +24,8 @@
             @method('PUT')
 
             <div class="form-group mb-3">
-                <label for="nama">Nama Kambing</label>
-                <input type="text" name="nama" class="form-control" value="{{ old('nama', $kambing->nama) }}" required>
+                <label for="jenis_kambing">jenis Kambing</label>
+                <input type="text" name="jenis_kambing" class="form-control" value="{{ old('jenis_kambing', $kambing->jenis_kambing) }}" required>
             </div>
 
             <div class="form-group mb-3">
@@ -63,7 +63,7 @@
                 <input type="file" name="foto" class="form-control-file">
                 @if ($kambing->foto)
                     <div class="mt-2">
-                        <img src="{{ asset('storage/' . $kambing->foto) }}" alt="{{ $kambing->nama }}" width="120">
+                        <img src="{{ asset('storage/' . $kambing->foto) }}" alt="{{ $kambing->jenis }}" width="120">
                     </div>
                 @endif
             </div>

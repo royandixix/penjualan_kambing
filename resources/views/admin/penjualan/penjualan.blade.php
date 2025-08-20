@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Pembayaran Kambing')
+@section('title', 'Daftar Penjualan')
 
 @section('content')
 <style>
@@ -15,51 +15,61 @@
 </style>
 
 <div class="container-fluid">
-    <h4 class="mb-4">Daftar Pembayaran Kambing</h4>
+    <h4 class="mb-4">Daftar Penjualan</h4>
 
-    {{-- <div class="mb-3">
-        <a href="{{ route('admin.pembayaran.tambah') }}" class="btn btn-primary align-items-center gap-1">
-            <i class="mdi mdi-credit-card-plus-outline"></i> Tambah Pembayaran
-        </a>
-    </div> --}}
+    <div class=" contrast-more: min-[]:">
+        con
+    </div>
+
+
+  
 
     <div class="table-responsive">
         <table class="table table-bordered table-hover text-center align-middle">
             <thead>
                 <tr>
                     <th>No</th>
-                    <th>Nama Pembeli</th>
-                    <th>Tanggal Pesan</th>
+                    <th>Nama Pelanggan</th>
+                    <th>Tanggal Jual</th>
                     <th>Status</th>
-                    <th>Total Harga</th>
+                    <th>Total Penjualan</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
-                @forelse ($pembayarans as $index => $pembayaran)
+                @forelse ($penjualans
+                 as $index => $penjualan)
                 <tr>
                     <td>{{ $index + 1 }}</td>
-                    <td>{{ $pembayaran->user->name }}</td>
-                    <td>{{ \Carbon\Carbon::parse($pembayaran->tanggal_pesan)->format('d M Y') }}</td>
-                    <td>{{ ucfirst($pembayaran->status) }}</td>
-                    <td>Rp {{ number_format($pembayaran->total_harga, 0, ',', '.') }}</td>
+                    <td>{{ $penjualan->user->name }}</td>
+                    <td>{{ \Carbon\Carbon::parse($penjualan->tanggal_jual)->format('d M Y') }}</td>
+                    <td>
+                        @if($penjualan->status == 'lunas')
+                            <span class="badge badge-success">{{ ucfirst($penjualan->status) }}</span>
+                        @elseif($penjualan->status == 'pending')
+                            <span class="badge badge-warning">{{ ucfirst($penjualan->status) }}</span>
+                        @else
+                            <span class="badge badge-danger">{{ ucfirst($penjualan->status) }}</span>
+                        @endif
+                    </td>
+                    <td>Rp {{ number_format($penjualan->total_harga, 0, ',', '.') }}</td>
                     <td>
                         <button type="button" class="btn btn-sm btn-info btn-detail"
                             data-bs-toggle="modal"
                             data-bs-target="#detailModal"
-                            data-user="{{ $pembayaran->user->name }}"
-                            data-tanggal="{{ \Carbon\Carbon::parse($pembayaran->tanggal_pesan)->format('d M Y') }}"
-                            data-status="{{ ucfirst($pembayaran->status) }}"
-                            data-total="Rp {{ number_format($pembayaran->total_harga,0,',','.') }}"
-                            data-metode="{{ ucfirst($pembayaran->metode_bayar) }}"
-                            data-detail='@json($pembayaran->detailPesanans)'>
+                            data-user="{{ $penjualan->user->name }}"
+                            data-tanggal="{{ \Carbon\Carbon::parse($penjualan->tanggal_jual)->format('d M Y') }}"
+                            data-status="{{ ucfirst($penjualan->status) }}"
+                            data-total="Rp {{ number_format($penjualan->total_harga,0,',','.') }}"
+                            data-metode="{{ ucfirst($penjualan->metode_bayar) }}"
+                            data-detail='@json($penjualan->detailPenjualans)'>
                             Detail
                         </button>
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6" class="text-center text-muted">Belum ada data pembayaran.</td>
+                    <td colspan="6" class="text-center text-muted">Belum ada data penjualan.</td>
                 </tr>
                 @endforelse
             </tbody>
@@ -67,26 +77,26 @@
     </div>
 </div>
 
-{{-- Modal Tunggal --}}
+{{-- Modal Detail Penjualan --}}
 <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="detailModalLabel">Detail Pembayaran</h5>
+        <h5 class="modal-title" id="detailModalLabel">Detail Penjualan</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <p><strong>Nama Pengguna:</strong> <span id="modal-user"></span></p>
-        <p><strong>Tanggal Pesan:</strong> <span id="modal-tanggal"></span></p>
+        <p><strong>Nama Pelanggan:</strong> <span id="modal-user"></span></p>
+        <p><strong>Tanggal Jual:</strong> <span id="modal-tanggal"></span></p>
         <p><strong>Status:</strong> <span id="modal-status"></span></p>
-        <p><strong>Total Harga:</strong> <span id="modal-total"></span></p>
+        <p><strong>Total Penjualan:</strong> <span id="modal-total"></span></p>
         <p><strong>Metode Bayar:</strong> <span id="modal-metode"></span></p>
 
-        <h6 class="mt-3">Detail Pesanan</h6>
+        <h6 class="mt-3">Detail Produk</h6>
         <table class="table table-bordered" id="modal-detail-table">
             <thead>
                 <tr>
-                    <th>Jenis Kambing</th>
+                    <th>Produk</th>
                     <th>Jumlah</th>
                     <th>Subtotal</th>
                 </tr>
@@ -101,9 +111,11 @@
   </div>
 </div>
 
+@endsection
+
+@push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const detailModal = document.getElementById('detailModal');
     const modalUser = document.getElementById('modal-user');
     const modalTanggal = document.getElementById('modal-tanggal');
     const modalStatus = document.getElementById('modal-status');
@@ -125,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function () {
             details.forEach(item => {
                 modalDetailTable.innerHTML += `
                     <tr>
-                        <td>${item.kambing ? item.kambing.jenis_kambing : '-'}</td>
+                        <td>${item.produk ? item.produk.nama : '-'}</td>
                         <td>${item.jumlah}</td>
                         <td>Rp ${Number(item.subtotal).toLocaleString('id-ID')}</td>
                     </tr>
@@ -135,4 +147,4 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
-@endsection
+@endpush

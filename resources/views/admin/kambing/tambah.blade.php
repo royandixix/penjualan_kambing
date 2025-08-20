@@ -11,8 +11,8 @@
             @csrf
 
             <div class="form-group mb-3">
-                <label for="nama">Nama Kambing</label>
-                <input type="text" name="nama" class="form-control" value="{{ old('nama') }}" required>
+                <label for="jenis_kambing">Jenis Kambing</label>
+                <input type="text" name="jenis_kambing" class="form-control" value="{{ old('jenis_kambing') }}" required>
             </div>
 
             <div class="form-group mb-3">

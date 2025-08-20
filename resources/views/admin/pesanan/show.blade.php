@@ -118,7 +118,7 @@
                         <thead class="text-center">
                             <tr>
                                 <th>No</th>
-                                <th>Nama Kambing</th>
+                                <th>Jenis Kambing</th>
                                 <th>Jumlah</th>
                                 <th>Harga Satuan</th>
                                 <th>Subtotal</th>
@@ -128,7 +128,7 @@
                             @forelse ($pesanan->detailPesanans as $index => $detail)
                                 <tr>
                                     <td class="text-center">{{ $index + 1 }}</td>
-                                    <td>{{ $detail->kambing->nama ?? 'Data tidak ditemukan' }}</td>
+                                    <td>{{ $detail->kambing->jenis_kambing ?? 'Data tidak ditemukan' }}</td>
                                     <td class="text-center">{{ $detail->jumlah }}</td>
                                     <td>Rp {{ number_format($detail->kambing->harga ?? 0, 0, ',', '.') }}</td>
                                     <td>Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</td>

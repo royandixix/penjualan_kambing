@@ -10,7 +10,7 @@ class Kambing extends Model
     use HasFactory;
 
     protected $fillable = [
-        'nama',
+        'jenis_kambing',
         'umur',
         'berat',
         'jenis_kelamin',

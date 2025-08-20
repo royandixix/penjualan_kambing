@@ -1,0 +1,29 @@
+public function show($id)
+{
+    $pembayaran = Pesanan::with(['user', 'detailPesanan.kambing'])
+        ->findOrFail($id);
+
+    return response()->json([
+        'id' => $pembayaran->id,
+        'user' => [
+            'id' => $pembayaran->user->id,
+            'name' => $pembayaran->user->name,
+            'email' => $pembayaran->user->email,
+        ],
+        'tanggal_pesan' => $pembayaran->tanggal_pesan,
+        'status' => $pembayaran->status,
+        'metode_bayar' => $pembayaran->metode_bayar,
+        'total_harga' => $pembayaran->total_harga,
+        'bukti_bayar' => $pembayaran->bukti_bayar,
+        'detail_pesanans' => $pembayaran->detailPesanan->map(function ($d) {
+            return [
+                'jumlah' => $d->jumlah,
+                'subtotal' => $d->subtotal,
+                'kambing' => $d->kambing ? [
+                    'id' => $d->kambing->id,
+                    'jenis_kambing' => $d->kambing->jenis_kambing,
+                ] : null,
+            ];
+        }),
+    ]);
+}

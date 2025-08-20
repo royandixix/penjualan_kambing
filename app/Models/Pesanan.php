@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +11,7 @@ class Pesanan extends Model
         'status',
         'total_harga',
         'metode_bayar',
-        'bukti_bayar',
+        'bukti_bayar', // ✅ bukti bayar ada di pesanan
     ];
 
     public function user()
@@ -20,17 +19,17 @@ class Pesanan extends Model
         return $this->belongsTo(User::class);
     }
 
+    // Relasi ke detail pesanan
     public function detailPesanans()
     {
-        return $this->hasMany(DetailPesanan::class);
+        return $this->hasMany(DetailPesanan::class, 'pesanan_id');
     }
-    
-    
 
+    // Relasi ke kambing (melalui detail_pesanans)
     public function kambings()
     {
         return $this->belongsToMany(Kambing::class, 'detail_pesanans')
-                    ->withPivot('jumlah', 'subtotal', 'harga_satuan');
+            ->withPivot('jumlah', 'subtotal', 'harga_satuan');
     }
 
     public function getTotalHargaFormattedAttribute()

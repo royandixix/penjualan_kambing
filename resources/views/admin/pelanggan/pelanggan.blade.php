@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Daftar Pengguna')
+@section('title', 'Daftar Pelanggan')
 
 @section('content')
 <style>
@@ -46,20 +46,17 @@
         left: 50% !important;
         transform: translateX(-50%) !important;
     }
-
 </style>
 
 <div class="container-fluid">
-    <h4 class="mb-4">Daftar Pengguna</h4>
+    <h4 class="mb-4">Daftar Pelanggan</h4>
 
-    <!-- Tombol Tambah Pengguna -->
     <div class="mb-3">
-        <a href="{{ route('admin.pengguna.tambah') }}" class="btn btn-primary align-items-center gap-1">
-            <i class="mdi mdi-account-plus-outline"></i> Tambah Pengguna
-        </a>
+        {{-- <a href="{{ route('admin.pelanggan.create') }}" class="btn btn-primary align-items-center gap-1">
+            <i class="mdi mdi-account-plus-outline"></i> Tambah Pelanggan
+        </a> --}}
     </div>
 
-    <!-- Tabel Data Pengguna -->
     <div class="table-responsive">
         <table class="table table-bordered table-hover align-middle shadow-sm">
             <thead class="table-light text-center">
@@ -69,38 +66,35 @@
                     <th>Email</th>
                     <th>No HP</th>
                     <th>Alamat</th>
-                    <th>Role</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
-                @forelse ($users as $index => $user)
+                @forelse ($pelanggan as $index => $user)
                 <tr>
                     <td>{{ $index + 1 }}</td>
-                    <td>{{ $user->name }}</td>
+                    <td>{{ $user->nama }}</td>
                     <td>{{ $user->email }}</td>
                     <td>{{ $user->no_hp }}</td>
                     <td>{{ $user->alamat }}</td>
-                    <td><span class="badge bg-info text-dark">{{ ucfirst($user->role) }}</span></td>
                     <td>
                         <div class="d-flex flex-column gap-1">
-                            <a href="{{ route('admin.pengguna.edit', $user->id) }}" class="btn btn-sm btn-outline-warning btn-action d-flex justify-content-center align-items-center gap-1">
+                            <a href="{{ route('admin.pelanggan.edit', $user->id) }}" class="btn btn-sm btn-outline-warning btn-action d-flex justify-content-center align-items-center gap-1">
                                 <i class="mdi mdi-pencil-outline"></i> Edit
                             </a>
-                            <form action="{{ route('admin.pengguna.destroy', $user->id) }}" method="POST" class="form-delete">
+                            {{-- <form action="{{ route('admin.pelanggan.destroy', $user->id) }}" method="POST" class="form-delete">
                                 @csrf
                                 @method('DELETE')
                                 <button type="button" class="btn btn-sm btn-outline-danger btn-action d-flex justify-content-center align-items-center gap-1 btn-delete">
                                     <i class="mdi mdi-delete-outline"></i> Hapus
                                 </button>
-                            </form>
+                            </form> --}}
                         </div>
                     </td>
-
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="7" class="text-center text-muted">Belum ada data pengguna.</td>
+                    <td colspan="6" class="text-center text-muted">Belum ada data pelanggan.</td>
                 </tr>
                 @endforelse
             </tbody>
@@ -110,7 +104,6 @@
 @endsection
 
 @push('scripts')
-<!-- jQuery & SweetAlert2 & Toastr -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
@@ -140,7 +133,7 @@
 
             Swal.fire({
                 title: 'Apakah kamu yakin?',
-                text: "Pengguna ini akan dihapus permanen!",
+                text: "Pelanggan ini akan dihapus permanen!",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',

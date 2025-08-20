@@ -9,15 +9,37 @@
         right: 0;
         z-index: 1030;
         background-color: #fff;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-       
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
     }
 
     .page-wrapper {
-        margin-top: 70px; /* Tinggi header */
+        margin-top: 70px;
+        /* Tinggi header */
     }
 
-    
+    .page-wrapper {
+        margin-top: 70px;
+
+    }
+
+    .navbar-brand .logo-icon img {
+        height: 40px;
+        width: auto;
+    }
+
+    .navbar-brand .logo-icon img {
+        height: 40px;
+        width: auto;
+
+    }
+
+
+    .navbar-brand .logo-text img {
+        height: 20px;
+        width: auto;
+    }
+
 </style>
 
 <header class="topbar" data-navbarbg="skin6">
@@ -26,7 +48,8 @@
         <div class="navbar-header" data-logobg="skin6">
             <a class="navbar-brand" href="{{ url('dashboard') }}">
                 <b class="logo-icon">
-                    <img src="{{ asset('admin-template/images/logo-icon.png') }}" alt="homepage" class="dark-logo" />
+                    <img src="{{ asset('img/logo.jpeg') }}" alt="homepage" class="dark-logo" style="height:40px; width:auto;" />
+
                     <img src="{{ asset('admin-template/images/logo-light-icon.png') }}" alt="homepage" class="light-logo" />
                 </b>
                 <span class="logo-text">
@@ -60,8 +83,7 @@
             <!-- Right Navbar -->
             <ul class="navbar-nav float-end">
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark pro-pic"
-                        href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark pro-pic" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <img src="{{ asset('images/users/profile.png') }}" alt="user" class="rounded-circle" width="31" />
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end user-dd animated" aria-labelledby="navbarDropdown">

@@ -18,6 +18,20 @@
             </a>
         </li>
 
+        <!-- Menu Pelanggan -->
+        <li class="sidebar-item">
+            <a class="sidebar-link" href="{{ route('admin.pelanggan.index') }}">
+                <i class="mdi mdi-account-multiple-outline"></i> <span class="hide-menu">Pelanggan</span>
+            </a>
+        </li>
+
+        <!-- Menu Penjualan -->
+        <li class="sidebar-item">
+            <a class="sidebar-link" href="{{ route('admin.penjualan.index') }}">
+                <i class="mdi mdi-cart-outline"></i> <span class="hide-menu">Penjualan</span>
+            </a>
+        </li>
+
         <li class="sidebar-item">
             <a class="sidebar-link" href="{{ route('admin.pesanan.index') }}">
                 <i class="mdi mdi-face"></i> <span class="hide-menu">Pesanan Masuk</span>

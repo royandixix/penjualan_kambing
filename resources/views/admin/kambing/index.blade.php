@@ -13,13 +13,6 @@
         min-width: 1200px;
     }
 
-    #toast-container {
-        bottom: 50px !important;
-        top: auto !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-    }
-
     /* Tombol aksi */
     .btn-outline-warning:hover {
         background-color: #ffc107;
@@ -43,6 +36,7 @@
         object-fit: cover;
         border-radius: 8px;
     }
+
 </style>
 
 <div class="container-fluid">
@@ -61,52 +55,52 @@
             <thead class="table-light">
                 <tr>
                     <th>No</th>
-                    <th>Nama</th>
+                    <th>Jenis Kambing</th>
                     <th>Umur</th>
                     <th>Berat</th>
                     <th>Jenis Kelamin</th>
                     <th>Harga</th>
                     <th>Foto</th>
-                    <th class="">Deskripsi</th>
+                    <th>Deskripsi</th>
                     <th class="text-nowrap">Aksi</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse ($kambings as $index => $kambing)
-                    <tr>
-                        <td>{{ $index + 1 }}</td>
-                        <td>{{ $kambing->nama }}</td>
-                        <td>{{ $kambing->umur }} bln</td>
-                        <td>{{ $kambing->berat }} kg</td>
-                        <td>{{ $kambing->jenis_kelamin }}</td>
-                        <td>Rp {{ number_format($kambing->harga, 0, ',', '.') }}</td>
-                        <td>
-                            @if ($kambing->foto)
-                                <img src="{{ asset('storage/' . $kambing->foto) }}" alt="{{ $kambing->nama }}" class="img-kambing">
-                            @else
-                                <em>Belum ada foto</em>
-                            @endif
-                        </td>
-                        <td class="text-start">{{ $kambing->deskripsi }}</td>
-                        <td>
-                            <div class="d-grid gap-2">
-                                <a href="{{ route('admin.kambing.edit', $kambing->id) }}" class="btn btn-sm btn-outline-warning d-flex align-items-center justify-content-center gap-1">
-                                    <i class="mdi mdi-pencil-outline"></i> Edit
-                                </a>
-                                <form action="{{ route('admin.kambing.destroy', $kambing->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-outline-danger d-flex align-items-center justify-content-center gap-1">
-                                        <i class="mdi mdi-delete-outline"></i> Hapus
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
+                <tr>
+                    <td>{{ $index + 1 }}</td>
+                    <td>{{ $kambing->jenis_kambing}}</td>
+                    <td>{{ $kambing->umur }} bln</td>
+                    <td>{{ $kambing->berat }} kg</td>
+                    <td>{{ $kambing->jenis_kelamin }}</td>
+                    <td>Rp {{ number_format($kambing->harga, 0, ',', '.') }}</td>
+                    <td>
+                        @if ($kambing->foto)
+                        <img src="{{ asset('storage/' . $kambing->foto) }}" alt="{{ $kambing->jenis_kambing }}" class="img-kambing">
+                        @else
+                        <em>Belum ada foto</em>
+                        @endif
+                    </td>
+                    <td class="text-start">{{ $kambing->deskripsi }}</td>
+                    <td>
+                        <div class="d-grid gap-2">
+                            <a href="{{ route('admin.kambing.edit', $kambing->id) }}" class="btn btn-sm btn-outline-warning d-flex align-items-center justify-content-center gap-1">
+                                <i class="mdi mdi-pencil-outline"></i> Edit
+                            </a>
+                            <form action="{{ route('admin.kambing.destroy', $kambing->id) }}" method="POST" class="d-inline form-delete">
+                                @csrf
+                                @method('DELETE')
+                                <button type="button" class="btn btn-sm btn-outline-danger d-flex align-items-center justify-content-center gap-1 btn-delete">
+                                    <i class="mdi mdi-delete-outline"></i> Hapus
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
                 @empty
-                    <tr>
-                        <td colspan="9" class="text-center">Belum ada data kambing.</td>
-                    </tr>
+                <tr>
+                    <td colspan="9" class="text-center">Belum ada data kambing.</td>
+                </tr>
                 @endforelse
             </tbody>
         </table>
@@ -114,27 +108,31 @@
 </div>
 @endsection
 
-@section('scripts')
-    <!-- jQuery & Toastr -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+@push('scripts')
+<!-- Load SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <script>
-        toastr.options = {
-            closeButton: true,
-            progressBar: true,
-            positionClass: "toast-bottom-center",
-            timeOut: "3000"
-        };
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        $('.btn-delete').on('click', function (e) {
+            e.preventDefault();
+            let form = $(this).closest('form');
 
-        @if (session('success'))
-            toastr.success("{{ session('success') }}");
-        @elseif (session('error'))
-            toastr.error("{{ session('error') }}");
-        @elseif (session('warning'))
-            toastr.warning("{{ session('warning') }}");
-        @elseif (session('info'))
-            toastr.info("{{ session('info') }}");
-        @endif
-    </script>
-@endsection
+            Swal.fire({
+                title: 'Apakah kamu yakin?',
+                text: "Data kambing akan dihapus permanen!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+    });
+</script>
+@endpush

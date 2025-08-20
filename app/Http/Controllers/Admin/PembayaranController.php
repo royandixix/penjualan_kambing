@@ -26,12 +26,11 @@ class PembayaranController extends Controller
      * Menampilkan detail dari satu pembayaran.
      */
     public function show($id)
-    {
-        $pembayaran = Pesanan::with(['user', 'detailPesanan.kambing'])
-            ->findOrFail($id);
+{
+    $pembayaran = Pesanan::with('user', 'detailPesanans.kambing')->findOrFail($id);
+    return view('admin.pembayaran.show', compact('pembayaran'));
+}
 
-        return view('admin.pembayaran.show', compact('pembayaran'));
-    }
 
     public function create()
     {

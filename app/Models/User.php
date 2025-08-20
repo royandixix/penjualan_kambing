@@ -31,4 +31,10 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    // ✅ relasi yang benar
+    public function pesanan()
+    {
+        return $this->hasMany(\App\Models\Pesanan::class);
+    }
 }
