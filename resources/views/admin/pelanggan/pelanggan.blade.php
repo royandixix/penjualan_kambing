@@ -52,9 +52,9 @@
     <h4 class="mb-4">Daftar Pelanggan</h4>
 
     <div class="mb-3">
-        {{-- <a href="{{ route('admin.pelanggan.create') }}" class="btn btn-primary align-items-center gap-1">
+        <a href="{{ route('admin.pelanggan.tambah') }}" class="btn btn-primary align-items-center gap-1">
             <i class="mdi mdi-account-plus-outline"></i> Tambah Pelanggan
-        </a> --}}
+        </a>
     </div>
 
     <div class="table-responsive">
@@ -82,13 +82,13 @@
                             <a href="{{ route('admin.pelanggan.edit', $user->id) }}" class="btn btn-sm btn-outline-warning btn-action d-flex justify-content-center align-items-center gap-1">
                                 <i class="mdi mdi-pencil-outline"></i> Edit
                             </a>
-                            {{-- <form action="{{ route('admin.pelanggan.destroy', $user->id) }}" method="POST" class="form-delete">
+                            <form action="{{ route('admin.pelanggan.destroy', $user->id) }}" method="POST" class="form-delete">
                                 @csrf
                                 @method('DELETE')
                                 <button type="button" class="btn btn-sm btn-outline-danger btn-action d-flex justify-content-center align-items-center gap-1 btn-delete">
                                     <i class="mdi mdi-delete-outline"></i> Hapus
                                 </button>
-                            </form> --}}
+                            </form>
                         </div>
                     </td>
                 </tr>

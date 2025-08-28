@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Pesanan;
 use App\Models\DetailPesanan;
+use App\Models\Pelanggan;
 use Illuminate\Support\Facades\Auth;
 
 class CheckoutController extends Controller
@@ -45,7 +46,6 @@ class CheckoutController extends Controller
             'tanggal_pesan' => now(),
         ]);
 
-
         // Simpan detail item pesanan & hitung total
         foreach ($items as $id) {
             if (isset($keranjang[$id])) {
@@ -66,11 +66,20 @@ class CheckoutController extends Controller
         // Simpan total ke pesanan
         $pesanan->update(['total_harga' => $total]);
 
+        // Tambahkan atau update data pelanggan
+        Pelanggan::updateOrCreate(
+            ['user_id' => $user->id], // jika sudah ada, update
+            [
+                'nama' => $user->name,
+                'email' => $user->email,
+                'no_hp' => $user->no_hp,
+                'alamat' => $user->alamat ?? '-',
+            ]
+        );
+
         // Kosongkan keranjang dari item yang diproses
         session(['keranjang' => $keranjang]);
 
-        return redirect()->route('user.keranjang.index')->with('success', 'Checkout berhasil');
-
-
+        return redirect()->route('user.keranjang.index')->with('success', 'Checkout berhasil dan data pelanggan tersimpan.');
     }
 }

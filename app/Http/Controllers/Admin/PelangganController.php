@@ -15,6 +15,11 @@ class PelangganController extends Controller
         return view('admin.pelanggan.pelanggan', compact('pelanggan'));
     }
 
+    public function create()
+    {
+        return view('admin.pelanggan.tambah_pelanggan');
+    }
+
 
     // Simpan data pelanggan baru
     public function store(Request $request)
@@ -58,6 +63,16 @@ class PelangganController extends Controller
 
         return redirect()->route('admin.pelanggan.index')->with('success', 'Pelanggan berhasil diupdate');
     }
+
+    public function edit($id)
+    {
+        $pelanggan = Pelanggan::findOrFail($id);
+        return view('admin.pelanggan.edit_pelanggan', compact('pelanggan'));
+    }
+    
+
+
+
 
     // Hapus pelanggan
     public function destroy($id)

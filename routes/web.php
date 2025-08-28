@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\User\CheckoutController;
 use App\Http\Controllers\User\QRCodeController;
 
+
 // Admin Controllers
 use App\Http\Controllers\Admin\KambingController as AdminKambingController;
 use App\Http\Controllers\Admin\PenggunaController;
@@ -53,6 +54,9 @@ Route::get('/register', [AuthController::class, 'showRegister'])->name('register
 Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+Route::post('/login-qr', [AuthController::class, 'loginWithQr'])->name('login.qr');
+
+
 // ====================
 // ADMIN AREA
 // ====================
@@ -86,7 +90,7 @@ Route::prefix('admin')
             Route::get('/tambah', [AdminPelangganController::class, 'create'])->name('tambah');
             Route::post('/', [AdminPelangganController::class, 'store'])->name('store');
             Route::get('/edit/{id}', [AdminPelangganController::class, 'edit'])->name('edit');
-            Route::put('/update/{id}', [AdminPelangganController::class, 'update'])->name('update');
+            Route::put('/update/{id}', [AdminPelangganController::class, 'update'])->name('update');            
             Route::delete('/destroy/{id}', [AdminPelangganController::class, 'destroy'])->name('destroy');
         });
 

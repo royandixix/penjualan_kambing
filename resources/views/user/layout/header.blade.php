@@ -16,9 +16,10 @@
         align-items: center;
     }
 
-    .navbar-brand i {
-        color: #198754;
+    .navbar-brand img {
+        height: 40px; /* ukuran logo */
         margin-right: 0.5rem;
+        border-radius: 0.25rem; /* opsional */
     }
 
     .navbar-toggler {
@@ -117,7 +118,7 @@
     <div class="container-fluid">
         <!-- Logo / Brand -->
         <a class="navbar-brand" href="{{ route('user.index') }}">
-            <i class="bi bi-house-heart-fill fs-5"></i>
+            <img src="{{ asset('img/logo.jpeg') }}" alt="Ternak Kamberu Logo">
             <span class="fs-6">Ternak Kamberu</span>
         </a>
 
