@@ -5,11 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use App\Models\User;
-use SimpleSoftwareIO\QrCode\Facades\QrCode; // composer require simplesoftwareio/simple-qrcode
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Facades\Log;
+use GuzzleHttp\Client;
 
 class AuthController extends Controller
 {
@@ -26,7 +26,6 @@ class AuthController extends Controller
     }
 
     // Proses registrasi
-    // Proses registrasi
     public function register(Request $request)
     {
         $validated = $request->validate([
@@ -41,6 +40,7 @@ class AuthController extends Controller
         // Generate token unik untuk QR
         $qrToken = Str::random(32);
 
+        // Buat user baru
         $user = User::create([
             'name'     => $validated['name'],
             'email'    => $validated['email'],
@@ -53,47 +53,68 @@ class AuthController extends Controller
 
         // Simpan QR code ke storage/public/qr
         $qrPath = "qr/{$user->id}.png";
-        Storage::disk('public')->put(
+        \Illuminate\Support\Facades\Storage::disk('public')->put(
             $qrPath,
             QrCode::format('png')->size(300)->generate($qrToken)
         );
 
-        $qrUrl = asset("storage/" . $qrPath);
+        // Ambil URL ngrok terbaru dari API lokal
+        $ngrokBaseUrl = $this->getNgrokUrl() ?: 'http://localhost:8000';
+        $qrUrl = $ngrokBaseUrl . "/storage/qr/{$user->id}.png";
 
-        // Konversi nomor WA user ke format +62 jika diawali 0
+        // Konversi nomor WA ke format internasional (tanpa +)
         $waNumber = $user->no_hp;
         if ($waNumber && substr($waNumber, 0, 1) === '0') {
-            $waNumber = '+62' . substr($waNumber, 1);
+            $waNumber = '62' . substr($waNumber, 1);
         }
 
-        // Kirim ke WhatsApp pakai Fonnte API
         if ($waNumber) {
             try {
-                $client = new \GuzzleHttp\Client();
+                $client = new Client();
+
+                // Kirim pesan WA via Fonnte (teks + link QR)
                 $response = $client->post('https://api.fonnte.com/send', [
                     'headers' => [
-                        'Authorization' => 'Bearer ' . env('FONNTE_TOKEN'), // ✅ HARUS pakai "Bearer "
+                        'Authorization' => env('FONNTE_TOKEN'),
                     ],
                     'form_params' => [
                         'target'  => $waNumber,
-                        'message' => "Halo {$user->name},\nTerima kasih sudah daftar!\nBerikut QR Code login kamu:\n$qrUrl",
-                    ]
+                        'message' => "Halo {$user->name},\n\nSelamat! Kamu sudah berhasil mendaftar di sistem Kamberu.\n\nUntuk mempermudah login, kami sudah membuatkan QR Code khusus untuk akunmu. Kamu bisa klik link berikut untuk melihat QR Code login langsung dari HP atau device lain:\n\n$qrUrl\n\nQR Code ini bersifat pribadi, jangan bagikan ke orang lain.\n\nTerima kasih telah mendaftar, semoga pengalamanmu menyenangkan!\n\n— Tim Kamberu",
+                    ],
                 ]);
 
-                // Log respons API supaya tahu berhasil atau error
-                Log::info("Fonnte WA response: " . $response->getBody());
+                Log::info("WA berhasil dikirim ke {$waNumber}, User ID: {$user->id}");
             } catch (\Exception $e) {
-                Log::error("Gagal kirim WA: " . $e->getMessage());
+                Log::error("Gagal kirim WA ke {$waNumber}, User ID {$user->id}: " . $e->getMessage());
             }
         } else {
             Log::warning("Nomor WA kosong, tidak bisa kirim QR: User ID {$user->id}");
         }
 
-        return redirect()->route('login')->with('success', 'Pendaftaran berhasil! QR Code sudah dibuat dan dikirim ke WhatsApp.');
+        return redirect()->route('login')
+            ->with('success', 'Pendaftaran berhasil! QR Code sudah dibuat dan dikirim ke WhatsApp.');
     }
 
+    // Ambil URL ngrok terbaru dari API lokal
+    private function getNgrokUrl()
+    {
+        try {
+            $client = new Client();
+            $response = $client->get('http://127.0.0.1:4040/api/tunnels');
+            $data = json_decode($response->getBody()->getContents(), true);
 
-    // Proses login normal (pakai name + password)
+            foreach ($data['tunnels'] as $tunnel) {
+                if (strpos($tunnel['public_url'], 'https://') === 0) {
+                    return $tunnel['public_url'];
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error("Gagal ambil URL ngrok: " . $e->getMessage());
+        }
+        return null;
+    }
+
+    // Proses login normal
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -112,10 +133,7 @@ class AuthController extends Controller
     // Proses login dengan QR
     public function loginWithQr(Request $request)
     {
-        $request->validate([
-            'qr_token' => 'required|string'
-        ]);
-
+        $request->validate(['qr_token' => 'required|string']);
         $user = User::where('qr_token', $request->qr_token)->first();
 
         if ($user) {
@@ -146,7 +164,6 @@ class AuthController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
         return redirect()->route('login')->with('success', 'Anda telah logout.');
     }
 }

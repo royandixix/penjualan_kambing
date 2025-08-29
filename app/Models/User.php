@@ -17,6 +17,7 @@ class User extends Authenticatable
         'role',
         'no_hp',
         'alamat',
+        'qr_token',
     ];
 
     protected $hidden = [
