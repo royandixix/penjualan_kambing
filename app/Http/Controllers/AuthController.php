@@ -59,7 +59,7 @@ class AuthController extends Controller
         );
 
         // Ambil URL ngrok terbaru dari API lokal
-        $ngrokBaseUrl = $this->getNgrokUrl() ?: 'http://localhost:8000';
+        $ngrokBaseUrl = $this->getNgrokUrl() ?: env('APP_URL', 'http://localhost:8000');
         $qrUrl = $ngrokBaseUrl . "/storage/qr/{$user->id}.png";
 
         // Konversi nomor WA ke format internasional (tanpa +)
@@ -72,7 +72,7 @@ class AuthController extends Controller
             try {
                 $client = new Client();
 
-                // Kirim pesan WA via Fonnte (teks + link QR)
+                // Kirim pesan WA via Fonnte
                 $response = $client->post('https://api.fonnte.com/send', [
                     'headers' => [
                         'Authorization' => env('FONNTE_TOKEN'),
@@ -83,7 +83,10 @@ class AuthController extends Controller
                     ],
                 ]);
 
-                Log::info("WA berhasil dikirim ke {$waNumber}, User ID: {$user->id}");
+                // 🔥 Cek respon dari Fonnte
+                $body = $response->getBody()->getContents();
+                Log::info("WA Response untuk {$waNumber}, User ID {$user->id}: " . $body);
+
             } catch (\Exception $e) {
                 Log::error("Gagal kirim WA ke {$waNumber}, User ID {$user->id}: " . $e->getMessage());
             }
