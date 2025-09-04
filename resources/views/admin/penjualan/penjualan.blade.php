@@ -18,7 +18,7 @@
     <h4 class="mb-4">Daftar Penjualan</h4>
 
     <div class=" contrast-more: min-[]:">
-        con
+        
     </div>
 
 

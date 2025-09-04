@@ -11,7 +11,7 @@ class KambingController extends Controller
 {
     public function index()
     {
-        // Lebih baik gunakan pagination agar lebih ringan
+        // Pagination 10 item per halaman
         $kambings = Kambing::paginate(10);
         return view('admin.kambing.index', compact('kambings'));
     }
@@ -23,20 +23,21 @@ class KambingController extends Controller
 
     public function store(Request $request)
     {
-        // Hilangkan simbol satuan sebelum validasi
+        // Hapus simbol dari input sebelum validasi
         $request->merge([
             'berat' => preg_replace('/[^\d.]/', '', $request->berat),
             'harga' => preg_replace('/[^\d]/', '', $request->harga),
         ]);
 
         $validated = $request->validate([
-            'jenis_kambing'   => 'required|string|max:255',
-            'umur'            => 'required|integer',
-            'berat'           => 'required|numeric',
-            'jenis_kelamin'   => 'required|in:Jantan,Betina', // lebih aman
-            'harga'           => 'required|numeric',
-            'deskripsi'       => 'nullable|string',
-            'foto'            => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+            'jenis_kambing' => 'required|string|max:255',
+            'umur'          => 'required|integer',
+            'berat'         => 'required|numeric',
+            'jenis_kelamin' => 'required|in:Jantan,Betina',
+            'harga'         => 'required|numeric',
+            'stok'          => 'required|integer|min:0',
+            'deskripsi'     => 'nullable|string',
+            'foto'          => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         // Simpan foto jika ada
@@ -47,7 +48,7 @@ class KambingController extends Controller
         Kambing::create($validated);
 
         return redirect()->route('admin.kambing.index')
-            ->with('success', 'Data kambing berhasil ditambahkan!');
+                         ->with('success', 'Data kambing berhasil ditambahkan!');
     }
 
     public function edit($id)
@@ -58,25 +59,25 @@ class KambingController extends Controller
 
     public function update(Request $request, $id)
     {
-        // Hilangkan simbol satuan sebelum validasi
         $request->merge([
             'berat' => preg_replace('/[^\d.]/', '', $request->berat),
             'harga' => preg_replace('/[^\d]/', '', $request->harga),
         ]);
 
         $validated = $request->validate([
-            'jenis_kambing'   => 'required|string|max:255',
-            'umur'            => 'required|integer',
-            'berat'           => 'required|numeric',
-            'jenis_kelamin'   => 'required|in:Jantan,Betina',
-            'harga'           => 'required|numeric',
-            'deskripsi'       => 'nullable|string',
-            'foto'            => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+            'jenis_kambing' => 'required|string|max:255',
+            'umur'          => 'required|integer',
+            'berat'         => 'required|numeric',
+            'jenis_kelamin' => 'required|in:Jantan,Betina',
+            'harga'         => 'required|numeric',
+            'stok'          => 'required|integer|min:0',
+            'deskripsi'     => 'nullable|string',
+            'foto'          => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         $kambing = Kambing::findOrFail($id);
 
-        // Update foto jika ada file baru
+        // Hapus foto lama jika ada file baru
         if ($request->hasFile('foto')) {
             if ($kambing->foto && Storage::disk('public')->exists($kambing->foto)) {
                 Storage::disk('public')->delete($kambing->foto);
@@ -87,7 +88,7 @@ class KambingController extends Controller
         $kambing->update($validated);
 
         return redirect()->route('admin.kambing.index')
-            ->with('success', 'Data kambing berhasil diperbarui!');
+                         ->with('success', 'Data kambing berhasil diperbarui!');
     }
 
     public function destroy($id)
@@ -101,6 +102,6 @@ class KambingController extends Controller
         $kambing->delete();
 
         return redirect()->route('admin.kambing.index')
-            ->with('success', 'Data kambing berhasil dihapus!');
+                         ->with('success', 'Data kambing berhasil dihapus!');
     }
 }

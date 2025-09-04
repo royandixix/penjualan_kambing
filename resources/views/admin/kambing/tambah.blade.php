@@ -45,6 +45,14 @@
                 <input type="text" name="harga" id="harga" class="form-control" value="{{ old('harga') }}" placeholder="Contoh: 1500000" required>
             </div>
 
+            <div class="mb-3">
+                <label for="stok" class="form-label">Stok</label>
+                <input type="number" class="form-control" name="stok" id="stok" value="{{ old('stok', $kambing->stok ?? 0) }}">
+            </div>
+            
+            
+            
+
             <div class="form-group mb-3">
                 <label for="deskripsi">Deskripsi</label>
                 <textarea name="deskripsi" class="form-control" rows="3">{{ old('deskripsi') }}</textarea>

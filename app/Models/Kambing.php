@@ -15,11 +15,12 @@ class Kambing extends Model
         'berat',
         'jenis_kelamin',
         'harga',
+        'stok',   // harus sesuai nama kolom di DB
         'foto',
         'deskripsi',
         'metode_bayar',
     ];
-
+    
     // Relasi: satu kambing punya banyak detail pesanan
     public function detailPesanans()
     {

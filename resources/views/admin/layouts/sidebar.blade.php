@@ -8,15 +8,15 @@
 
         <li class="sidebar-item">
             <a class="sidebar-link" href="{{ route('admin.kambing.index') }}">
-                <i class="mdi mdi-account-network"></i> <span class="hide-menu">Manajemen Kambing</span>
+                <i class="mdi mdi-account-network"></i> <span class="hide-menu">Daftar Kambing</span>
             </a>
         </li>
 
-        <li class="sidebar-item">
+        {{-- <li class="sidebar-item">
             <a class="sidebar-link" href="{{ route('admin.pengguna.index') }}">
                 <i class="mdi mdi-border-all"></i> <span class="hide-menu">Manajemen Pengguna</span>
             </a>
-        </li>
+        </li> --}}
 
         <!-- Menu Pelanggan -->
         <li class="sidebar-item">

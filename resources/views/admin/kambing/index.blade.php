@@ -60,6 +60,7 @@
                     <th>Berat</th>
                     <th>Jenis Kelamin</th>
                     <th>Harga</th>
+                    <th>stock</th>
                     <th>Foto</th>
                     <th>Deskripsi</th>
                     <th class="text-nowrap">Aksi</th>
@@ -74,6 +75,7 @@
                     <td>{{ $kambing->berat }} kg</td>
                     <td>{{ $kambing->jenis_kelamin }}</td>
                     <td>Rp {{ number_format($kambing->harga, 0, ',', '.') }}</td>
+                    <td>{{ $kambing->stok }}</td> <!-- Tambahkan stok -->
                     <td>
                         @if ($kambing->foto)
                         <img src="{{ asset('storage/' . $kambing->foto) }}" alt="{{ $kambing->jenis_kambing }}" class="img-kambing">
@@ -97,6 +99,7 @@
                         </div>
                     </td>
                 </tr>
+                
                 @empty
                 <tr>
                     <td colspan="9" class="text-center">Belum ada data kambing.</td>

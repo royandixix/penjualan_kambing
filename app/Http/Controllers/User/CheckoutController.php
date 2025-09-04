@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Pesanan;
 use App\Models\DetailPesanan;
 use App\Models\Pelanggan;
+use App\Models\Kambing;
 use Illuminate\Support\Facades\Auth;
 
 class CheckoutController extends Controller
@@ -20,7 +21,7 @@ class CheckoutController extends Controller
             'bukti_bayar' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
 
-        // Validasi jika perlu bukti
+        // Validasi bukti bayar jika metode perlu
         if (in_array($request->metode_bayar, ['qris', 'transfer']) && !$request->hasFile('bukti_bayar')) {
             return back()->withErrors(['bukti_bayar' => 'Silakan upload bukti pembayaran.'])->withInput();
         }
@@ -46,11 +47,20 @@ class CheckoutController extends Controller
             'tanggal_pesan' => now(),
         ]);
 
-        // Simpan detail item pesanan & hitung total
+        // Simpan detail item pesanan & kurangi stok
         foreach ($items as $id) {
             if (isset($keranjang[$id])) {
                 $item = $keranjang[$id];
 
+                $kambing = Kambing::find($id);
+                if (!$kambing) continue;
+
+                // Validasi stok
+                if ($kambing->stok <= 0) {
+                    return back()->withErrors(['stok' => "Stok kambing {$kambing->jenis_kambing} habis!"]);
+                }
+
+                // Buat detail pesanan
                 DetailPesanan::create([
                     'pesanan_id' => $pesanan->id,
                     'kambing_id' => $id,
@@ -58,17 +68,21 @@ class CheckoutController extends Controller
                     'subtotal' => $item['harga'],
                 ]);
 
+                // Kurangi stok
+                $kambing->stok = $kambing->stok - 1;
+                $kambing->save();
+
                 $total += $item['harga'];
                 unset($keranjang[$id]); // hapus dari keranjang
             }
         }
 
-        // Simpan total ke pesanan
+        // Update total harga pesanan
         $pesanan->update(['total_harga' => $total]);
 
-        // Tambahkan atau update data pelanggan
+        // Update atau tambah data pelanggan
         Pelanggan::updateOrCreate(
-            ['user_id' => $user->id], // jika sudah ada, update
+            ['user_id' => $user->id],
             [
                 'nama' => $user->name,
                 'email' => $user->email,
@@ -80,6 +94,6 @@ class CheckoutController extends Controller
         // Kosongkan keranjang dari item yang diproses
         session(['keranjang' => $keranjang]);
 
-        return redirect()->route('user.keranjang.index')->with('success', 'Checkout berhasil dan data pelanggan tersimpan.');
+        return redirect()->route('user.keranjang.index')->with('success', 'Checkout berhasil dan stok otomatis berkurang.');
     }
 }
