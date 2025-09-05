@@ -19,6 +19,8 @@ use App\Http\Controllers\Admin\PenjualanController as AdminPenjualanController;
 
 
 
+
+
 // User Controllers
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\KambingController as UserKambingController;
@@ -64,6 +66,10 @@ Route::prefix('admin')
     ->name('admin.')
     ->middleware(['auth'])
     ->group(function () {
+
+        Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+
+
         Route::get('/', [AdminKambingController::class, 'index'])->name('home');
         Route::prefix('kambing')->name('kambing.')->group(function () {
             Route::get('/', [AdminKambingController::class, 'index'])->name('index');
@@ -72,6 +78,8 @@ Route::prefix('admin')
             Route::get('/edit/{id}', [AdminKambingController::class, 'edit'])->name('edit');
             Route::put('/update/{id}', [AdminKambingController::class, 'update'])->name('update');
             Route::delete('/destroy/{id}', [AdminKambingController::class, 'destroy'])->name('destroy');
+            
+            Route::get('/export-pdf', [AdminKambingController::class, 'exportPdf'])->name('exportPdf');
         });
 
         Route::prefix('pengguna')->name('pengguna.')->group(function () {
@@ -90,9 +98,13 @@ Route::prefix('admin')
             Route::get('/tambah', [AdminPelangganController::class, 'create'])->name('tambah');
             Route::post('/', [AdminPelangganController::class, 'store'])->name('store');
             Route::get('/edit/{id}', [AdminPelangganController::class, 'edit'])->name('edit');
-            Route::put('/update/{id}', [AdminPelangganController::class, 'update'])->name('update');            
+            Route::put('/update/{id}', [AdminPelangganController::class, 'update'])->name('update');
             Route::delete('/destroy/{id}', [AdminPelangganController::class, 'destroy'])->name('destroy');
+
+            // Route untuk export PDF
+            Route::get('/export-pdf', [AdminPelangganController::class, 'exportPdf'])->name('exportPdf');
         });
+
 
         Route::prefix('penjualan')->name('penjualan.')->group(function () {
             Route::get('/', [AdminPenjualanController::class, 'index'])->name('index');
@@ -101,8 +113,11 @@ Route::prefix('admin')
             Route::get('/edit/{id}', [AdminPenjualanController::class, 'edit'])->name('edit');
             Route::put('/update/{id}', [AdminPenjualanController::class, 'update'])->name('update');
             Route::delete('/destroy/{id}', [AdminPenjualanController::class, 'destroy'])->name('destroy');
+
+            
+            Route::get('/export-pdf', [AdminPenjualanController::class, 'exportPdf'])->name('exportPdf');
         });
-        
+
 
         Route::prefix('pesanan')->name('pesanan.')->group(function () {
             Route::get('/', [AdminPesananController::class, 'index'])->name('index');

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Pelanggan;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf; // import di atas
 
 class PelangganController extends Controller
 {
@@ -69,7 +70,7 @@ class PelangganController extends Controller
         $pelanggan = Pelanggan::findOrFail($id);
         return view('admin.pelanggan.edit_pelanggan', compact('pelanggan'));
     }
-    
+
 
 
 
@@ -82,4 +83,19 @@ class PelangganController extends Controller
 
         return redirect()->route('admin.pelanggan.index')->with('success', 'Pelanggan berhasil dihapus');
     }
+
+
+
+
+
+    public function exportPdf()
+{
+    $pelanggan = Pelanggan::all();
+
+    $pdf = Pdf::loadView('admin.pelanggan.laporan_pdf', compact('pelanggan'));
+
+    // Tampilkan PDF di browser (inline) bukan download langsung
+    return $pdf->stream('laporan_pelanggan_' . date('Y-m-d') . '.pdf');
+}
+
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Kambing;
 use Illuminate\Support\Facades\Storage;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class KambingController extends Controller
 {
@@ -103,5 +104,17 @@ class KambingController extends Controller
 
         return redirect()->route('admin.kambing.index')
                          ->with('success', 'Data kambing berhasil dihapus!');
+    }
+
+
+    public function exportPdf()
+    {
+        $kambings = Kambing::all();
+
+        // Load view PDF
+        $pdf = Pdf::loadView('admin.kambing.laporan_pdf', compact('kambings'));
+
+        // Preview di browser/tab baru
+        return $pdf->stream('laporan_kambing_' . date('Y-m-d') . '.pdf');
     }
 }

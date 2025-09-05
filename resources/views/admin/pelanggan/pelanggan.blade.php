@@ -56,6 +56,10 @@
             <i class="mdi mdi-account-plus-outline"></i> Tambah Pelanggan
         </a>
     </div>
+    <a href="{{ route('admin.pelanggan.exportPdf') }}" class="btn btn-success mb-3">
+        <i class="mdi mdi-file-pdf-outline"></i> Export PDF
+    </a>
+    
 
     <div class="table-responsive">
         <table class="table table-bordered table-hover align-middle shadow-sm">

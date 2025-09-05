@@ -49,6 +49,11 @@
         </a>
     </div>
 
+    <a href="{{ route('admin.kambing.exportPdf') }}" target="_blank" class="btn btn-success mb-3">
+        <i class="mdi mdi-file-pdf-outline"></i> Export PDF
+    </a>
+    
+
     <!-- Tabel Data Kambing -->
     <div class="table-responsive">
         <table class="table table-bordered table-hover text-center align-middle">

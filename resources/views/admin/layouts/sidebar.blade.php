@@ -1,10 +1,12 @@
 <nav class="sidebar-nav sticky-sidebar">
     <ul id="sidebarnav">
         <li class="sidebar-item">
-            <a class="sidebar-link" href="{{ route('admin.kambing.index') }}">
-                <i class="mdi mdi-view-dashboard"></i> <span class="hide-menu">Dashboard</span>
+            <a class="sidebar-link" href="{{ route('admin.dashboard') }}">
+                <i class="mdi mdi-view-dashboard"></i> 
+                <span class="hide-menu">Dashboard</span>
             </a>
         </li>
+        
 
         <li class="sidebar-item">
             <a class="sidebar-link" href="{{ route('admin.kambing.index') }}">

@@ -1,214 +1,135 @@
-{{-- <!-- resources/views/admin/dashboard.blade.php -->
-
 @extends('admin.layouts.app')
-
-@section('title', 'Dashboard') <!-- Title halaman -->
+@section('title', 'Dashboard Admin')
 
 @section('content')
-    <!-- ============================================================== -->
-    <div class="page-breadcrumb">
-        <div class="row align-items-center">
-            <div class="col-6">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb mb-0 d-flex align-items-center">
-                        <li class="breadcrumb-item">
-                            <a href="index.html" class="link"><i class="mdi mdi-home-outline fs-4"></i></a>
-                        </li>
-                        <li class="breadcrumb-item active" aria-current="page">
-                            Dashboard
-                        </li>
-                    </ol>
-                </nav>
-               
+<div class="container-fluid">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="mb-0">Selamat Datang, {{ Auth::user()->name }}!</h4>
+        <span class="text-muted">Dashboard Admin</span>
+    </div>
+
+    <!-- Statistik Cepat -->
+    <div class="row">
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm border-left-primary h-100">
+                <div class="card-body">
+                    <h6 class="text-primary">Total Pesanan</h6>
+                    <h3>{{ $totalPesanan->sum() }}</h3>
+                </div>
             </div>
-            <div class="col-6">
-                <div class="text-end upgrade-btn">
-                    <!-- Button upgrade or other actions -->
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm border-left-success h-100">
+                <div class="card-body">
+                    <h6 class="text-success">Total Kambing</h6>
+                    <h3>{{ $stokKambing->sum('total_stok') }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm border-left-info h-100">
+                <div class="card-body">
+                    <h6 class="text-info">Jenis Kambing</h6>
+                    <h3>{{ $stokKambing->count() }}</h3>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="container-fluid">
-        <h4 class="mb-4">Daftar Kambing</h4>
-    
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Nama</th>
-                    <th>Umur</th>
-                    <th>Berat</th>
-                    <th>Jenis Kelamin</th>
-                    <th>Harga</th>
-                    <th>Foto</th>
-                    <th>Deskripsi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($kambings as $kambing)
-                <tr>
-                    <td>{{ $kambing->nama }}</td>
-                    <td>{{ $kambing->umur }} bulan</td>
-                    <td>{{ $kambing->berat }} kg</td>
-                    <td>{{ $kambing->jenis_kelamin }}</td>
-                    <td>Rp {{ number_format($kambing->harga, 0, ',', '.') }}</td>
-                    <td>
-                        @if($kambing->foto)
-                            <img src="{{ asset('storage/' . $kambing->foto) }}" alt="{{ $kambing->nama }}" width="80">
-                        @else
-                            <em>Belum ada foto</em>
-                        @endif
-                    </td>
-                    <td>{{ $kambing->deskripsi }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-  
-        {{-- <div class="row">
-            <!-- column -->
-            <div class="col-lg-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="card-title">Recent Comments</h4>
-                    </div>
-                    <div class="comment-widgets scrollable">
-                        <!-- Comment Row -->
-                        <div class="d-flex flex-row comment-row m-t-0">
-                            <div class="p-2">
-                                <img src="images/users/1.jpg" alt="user" width="50" class="rounded-circle" />
-                            </div>
-                            <div class="comment-text w-100">
-                                <h6 class="font-medium">James Anderson</h6>
-                                <span class="m-b-15 d-block">Lorem Ipsum is simply dummy text of the printing and
-                                    type setting industry.
-                                </span>
-                                <div class="comment-footer">
-                                    <span class="text-muted float-end">April 14, 2024</span>
-                                    <span class="label label-rounded label-primary">Pending</span>
-                                    <span class="action-icons">
-                                        <a href="javascript:void(0)"><i class="mdi mdi-pencil-box-outline fs-4"></i></a>
-                                        <a href="javascript:void(0)"><i class="mdi mdi-check fs-4"></i></a>
-                                        <a href="javascript:void(0)"><i class="mdi mdi-heart-outline fs-4"></i></a>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Comment Row -->
-                        <div class="d-flex flex-row comment-row">
-                            <div class="p-2">
-                                <img src="images/users/4.jpg" alt="user" width="50" class="rounded-circle" />
-                            </div>
-                            <div class="comment-text active w-100">
-                                <h6 class="font-medium">Michael Jorden</h6>
-                                <span class="m-b-15 d-block">Lorem Ipsum is simply dummy text of the printing and
-                                    type setting industry.
-                                </span>
-                                <div class="comment-footer">
-                                    <span class="text-muted float-end">April 14, 2024</span>
-                                    <span class="label label-success label-rounded">Approved</span>
-                                    <span class="action-icons active">
-                                        <a href="javascript:void(0)"><i class="mdi mdi-pencil-box-outline fs-4"></i></a>
-                                        <a href="javascript:void(0)"><i class="mdi mdi-window-close fs-4"></i></a>
-                                        <a href="javascript:void(0)"><i
-                                                class="mdi mdi-heart-outline fs-4 text-danger"></i></a>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Comment Row -->
-                        <div class="d-flex flex-row comment-row">
-                            <div class="p-2">
-                                <img src="images/users/5.jpg" alt="user" width="50" class="rounded-circle" />
-                            </div>
-                            <div class="comment-text w-100">
-                                <h6 class="font-medium">Johnathan Doeting</h6>
-                                <span class="m-b-15 d-block">Lorem Ipsum is simply dummy text of the printing and
-                                    type setting industry.
-                                </span>
-                                <div class="comment-footer">
-                                    <span class="text-muted float-end">April 14, 2024</span>
-                                    <span class="label label-rounded label-danger">Rejected</span>
-                                    <span class="action-icons">
-                                        <a href="javascript:void(0)"><i class="mdi mdi-pencil-box-outline fs-4"></i></a>
-                                        <a href="javascript:void(0)"><i class="mdi mdi-check fs-4"></i></a>
-                                        <a href="javascript:void(0)"><i class="mdi mdi-heart-outline fs-4"></i></a>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    <!-- Grafik -->
+    <div class="row mt-4">
+
+        <!-- Grafik Pesanan Per Bulan -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm card-hover">
+                <div class="card-header bg-primary text-white">
+                    <strong>Pesanan per Bulan ({{ date('Y') }})</strong>
+                </div>
+                <div class="card-body">
+                    <canvas id="pesananChart"></canvas>
                 </div>
             </div>
-            <!-- column -->
-            <div class="col-lg-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="card-title">Temp Guide</h4>
-                        <div class="d-flex align-items-center flex-row m-t-30">
-                            <div class="display-5 text-info">
-                                <i class="mdi mdi-weather-lightning-rainy"></i>
-                                <span>73<sup>°</sup></span>
-                            </div>
-                            <div class="m-l-10">
-                                <h3 class="m-b-0">Saturday</h3>
-                                <small>Ahmedabad, India</small>
-                            </div>
-                        </div>
-                        <table class="table no-border mini-table m-t-20">
-                            <tbody>
-                                <tr>
-                                    <td class="text-muted">Wind</td>
-                                    <td class="font-medium">ESE 17 mph</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-muted">Humidity</td>
-                                    <td class="font-medium">83%</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-muted">Pressure</td>
-                                    <td class="font-medium">28.56 in</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-muted">Cloud Cover</td>
-                                    <td class="font-medium">78%</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <ul class="row list-style-none text-center m-t-30">
-                            <li class="col-3">
-                                <h4 class="text-info">
-                                    <i class="mdi mdi-weather-sunny fs-3"></i>
-                                </h4>
-                                <span class="d-block text-muted">09:30</span>
-                                <h3 class="m-t-5">70<sup>°</sup></h3>
-                            </li>
-                            <li class="col-3">
-                                <h4 class="text-info">
-                                    <i class="mdi mdi-weather-partlycloudy fs-3"></i>
-                                </h4>
-                                <span class="d-block text-muted">11:30</span>
-                                <h3 class="m-t-5">72<sup>°</sup></h3>
-                            </li>
-                            <li class="col-3">
-                                <h4 class="text-info">
-                                    <i class="mdi mdi-weather-pouring fs-3"></i>
-                                </h4>
-                                <span class="d-block text-muted">13:30</span>
-                                <h3 class="m-t-5">75<sup>°</sup></h3>
-                            </li>
-                            <li class="col-3">
-                                <h4 class="text-info">
-                                    <i class="mdi mdi-weather-hail fs-3"></i>
-                                </h4>
-                                <span class="d-block text-muted">15:30</span>
-                                <h3 class="m-t-5">76<sup>°</sup></h3>
-                            </li>
-                        </ul>
-                    </div>
+        </div>
+
+        <!-- Grafik Stok Kambing -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm card-hover">
+                <div class="card-header bg-success text-white">
+                    <strong>Stok Kambing per Jenis</strong>
+                </div>
+                <div class="card-body">
+                    <canvas id="stokChart"></canvas>
                 </div>
             </div>
-        </div> --}}
+        </div>
 
     </div>
-@endsection --}}
+</div>
+@endsection
+
+@push('styles')
+<style>
+    /* Hover efek untuk card */
+    .card-hover:hover {
+        transform: translateY(-5px);
+        transition: 0.3s;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    .border-left-primary { border-left: 4px solid #007bff !important; }
+    .border-left-success { border-left: 4px solid #28a745 !important; }
+    .border-left-info { border-left: 4px solid #17a2b8 !important; }
+</style>
+@endpush
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Pesanan Per Bulan
+    const ctxPesanan = document.getElementById('pesananChart').getContext('2d');
+    const pesananChart = new Chart(ctxPesanan, {
+        type: 'bar',
+        data: {
+            labels: @json($bulan),
+            datasets: [{
+                label: 'Jumlah Pesanan',
+                data: @json($totalPesanan),
+                backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+        }
+    });
+
+    // Stok Kambing per Jenis
+    const ctxStok = document.getElementById('stokChart').getContext('2d');
+    const stokChart = new Chart(ctxStok, {
+        type: 'doughnut',
+        data: {
+            labels: @json($stokKambing->pluck('jenis_kambing')),
+            datasets: [{
+                label: 'Stok Kambing',
+                data: @json($stokKambing->pluck('total_stok')),
+                backgroundColor: [
+                    '#FF6384',
+                    '#36A2EB',
+                    '#FFCE56',
+                    '#4BC0C0',
+                    '#9966FF',
+                    '#FF9F40'
+                ],
+                borderColor: '#fff',
+                borderWidth: 2
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+    });
+</script>
+@endpush
