@@ -6,7 +6,6 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\User\CheckoutController;
 use App\Http\Controllers\User\QRCodeController;
 
-
 // Admin Controllers
 use App\Http\Controllers\Admin\KambingController as AdminKambingController;
 use App\Http\Controllers\Admin\PenggunaController;
@@ -15,11 +14,6 @@ use App\Http\Controllers\Admin\PembayaranController;
 use App\Http\Controllers\Admin\LaporanController;
 use App\Http\Controllers\Admin\PelangganController as AdminPelangganController;
 use App\Http\Controllers\Admin\PenjualanController as AdminPenjualanController;
-
-
-
-
-
 
 // User Controllers
 use App\Http\Controllers\User\UserController;
@@ -33,6 +27,19 @@ use App\Http\Controllers\User\PesananController as UserPesananController;
 | Web Routes
 |--------------------------------------------------------------------------
 */
+
+// ====================
+// ROUTE UNTUK SERVE QR CODE (ngrok friendly)
+// ====================
+Route::get('/storage/qr/{filename}', function ($filename) {
+    $path = storage_path('app/public/qr/' . $filename);
+
+    if (!file_exists($path)) {
+        abort(404);
+    }
+
+    return response()->file($path);
+});
 
 // ====================
 // ROUTE AWAL
@@ -58,7 +65,6 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::post('/login-qr', [AuthController::class, 'loginWithQr'])->name('login.qr');
 
-
 // ====================
 // ADMIN AREA
 // ====================
@@ -68,9 +74,9 @@ Route::prefix('admin')
     ->group(function () {
 
         Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
-
-
         Route::get('/', [AdminKambingController::class, 'index'])->name('home');
+
+        // Kambing
         Route::prefix('kambing')->name('kambing.')->group(function () {
             Route::get('/', [AdminKambingController::class, 'index'])->name('index');
             Route::get('/tambah', [AdminKambingController::class, 'create'])->name('tambah');
@@ -78,10 +84,10 @@ Route::prefix('admin')
             Route::get('/edit/{id}', [AdminKambingController::class, 'edit'])->name('edit');
             Route::put('/update/{id}', [AdminKambingController::class, 'update'])->name('update');
             Route::delete('/destroy/{id}', [AdminKambingController::class, 'destroy'])->name('destroy');
-            
             Route::get('/export-pdf', [AdminKambingController::class, 'exportPdf'])->name('exportPdf');
         });
 
+        // Pengguna
         Route::prefix('pengguna')->name('pengguna.')->group(function () {
             Route::get('/', [PenggunaController::class, 'index'])->name('index');
             Route::get('/tambah', [PenggunaController::class, 'create'])->name('tambah');
@@ -91,8 +97,7 @@ Route::prefix('admin')
             Route::delete('/destroy/{id}', [PenggunaController::class, 'destroy'])->name('destroy');
         });
 
-
-        // CRUD Pelanggan
+        // Pelanggan
         Route::prefix('pelanggan')->name('pelanggan.')->group(function () {
             Route::get('/', [AdminPelangganController::class, 'index'])->name('index');
             Route::get('/tambah', [AdminPelangganController::class, 'create'])->name('tambah');
@@ -100,12 +105,10 @@ Route::prefix('admin')
             Route::get('/edit/{id}', [AdminPelangganController::class, 'edit'])->name('edit');
             Route::put('/update/{id}', [AdminPelangganController::class, 'update'])->name('update');
             Route::delete('/destroy/{id}', [AdminPelangganController::class, 'destroy'])->name('destroy');
-
-            // Route untuk export PDF
             Route::get('/export-pdf', [AdminPelangganController::class, 'exportPdf'])->name('exportPdf');
         });
 
-
+        // Penjualan
         Route::prefix('penjualan')->name('penjualan.')->group(function () {
             Route::get('/', [AdminPenjualanController::class, 'index'])->name('index');
             Route::get('/tambah', [AdminPenjualanController::class, 'create'])->name('tambah');
@@ -113,12 +116,10 @@ Route::prefix('admin')
             Route::get('/edit/{id}', [AdminPenjualanController::class, 'edit'])->name('edit');
             Route::put('/update/{id}', [AdminPenjualanController::class, 'update'])->name('update');
             Route::delete('/destroy/{id}', [AdminPenjualanController::class, 'destroy'])->name('destroy');
-
-            
             Route::get('/export-pdf', [AdminPenjualanController::class, 'exportPdf'])->name('exportPdf');
         });
 
-
+        // Pesanan
         Route::prefix('pesanan')->name('pesanan.')->group(function () {
             Route::get('/', [AdminPesananController::class, 'index'])->name('index');
             Route::get('/{id}', [AdminPesananController::class, 'show'])->name('show');
@@ -126,16 +127,17 @@ Route::prefix('admin')
             Route::delete('/{id}', [AdminPesananController::class, 'destroy'])->name('destroy');
         });
 
+        // Pembayaran
         Route::prefix('pembayaran')->name('pembayaran.')->group(function () {
             Route::get('/', [PembayaranController::class, 'index'])->name('index');
             Route::get('/tambah', [PembayaranController::class, 'create'])->name('tambah');
             Route::post('/tambah', [PembayaranController::class, 'store'])->name('store');
+            Route::get('/cetak-pdf', [PembayaranController::class, 'cetakPdf'])->name('cetak_pdf'); // pindah ke atas
             Route::get('/{id}', [PembayaranController::class, 'show'])->name('show');
-            Route::get('admin/pembayaran/{id}', [PembayaranController::class, 'show'])->name('admin.pembayaran.show');
-            Route::get('admin/pembayaran/{id}/json', [PembayaranController::class, 'showJson']);
-            Route::get('admin/pembayaran/{id}', [PembayaranController::class, 'show'])->name('admin.pembayaran.show');
         });
+         
 
+        // Laporan
         Route::prefix('laporan')->name('laporan.')->group(function () {
             Route::get('/', [LaporanController::class, 'index'])->name('index');
             Route::get('/cetak', [LaporanController::class, 'cetak'])->name('cetak');

@@ -17,21 +17,16 @@
 <div class="container-fluid">
     <h4 class="mb-4">Daftar Penjualan</h4>
 
-    <div class=" contrast-more: min-[]:">
-        
-    </div>
-
     <a href="{{ route('admin.penjualan.exportPdf') }}" target="_blank" class="btn btn-success mb-3">
         <i class="mdi mdi-file-pdf-outline"></i> Export PDF
     </a>
     
-  
-
     <div class="table-responsive">
         <table class="table table-bordered table-hover text-center align-middle">
             <thead>
                 <tr>
                     <th>No</th>
+                    <th>Jenis Kambing</th>
                     <th>Nama Pelanggan</th>
                     <th>Tanggal Jual</th>
                     <th>Status</th>
@@ -40,12 +35,16 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse ($penjualans
-                 as $index => $penjualan)
+                @forelse ($penjualans as $index => $penjualan)
                 <tr>
                     <td>{{ $index + 1 }}</td>
+                    <td>
+                        @foreach($penjualan->detailPesanans as $detail)
+                            {{ $detail->kambing->jenis_kambing }}@if(!$loop->last), @endif
+                        @endforeach
+                    </td>
                     <td>{{ $penjualan->user->name }}</td>
-                    <td>{{ \Carbon\Carbon::parse($penjualan->tanggal_jual)->format('d M Y') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($penjualan->tanggal_pesan)->format('d M Y') }}</td>
                     <td>
                         @if($penjualan->status == 'lunas')
                             <span class="badge badge-success">{{ ucfirst($penjualan->status) }}</span>
@@ -61,18 +60,18 @@
                             data-bs-toggle="modal"
                             data-bs-target="#detailModal"
                             data-user="{{ $penjualan->user->name }}"
-                            data-tanggal="{{ \Carbon\Carbon::parse($penjualan->tanggal_jual)->format('d M Y') }}"
+                            data-tanggal="{{ \Carbon\Carbon::parse($penjualan->tanggal_pesan)->format('d M Y') }}"
                             data-status="{{ ucfirst($penjualan->status) }}"
                             data-total="Rp {{ number_format($penjualan->total_harga,0,',','.') }}"
                             data-metode="{{ ucfirst($penjualan->metode_bayar) }}"
-                            data-detail='@json($penjualan->detailPenjualans)'>
+                            data-detail='@json($penjualan->detailPesanans)'>
                             Detail
                         </button>
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6" class="text-center text-muted">Belum ada data penjualan.</td>
+                    <td colspan="7" class="text-center text-muted">Belum ada data penjualan.</td>
                 </tr>
                 @endforelse
             </tbody>
@@ -140,7 +139,7 @@ document.addEventListener('DOMContentLoaded', function () {
             details.forEach(item => {
                 modalDetailTable.innerHTML += `
                     <tr>
-                        <td>${item.produk ? item.produk.nama : '-'}</td>
+                        <td>${item.kambing ? item.kambing.jenis_kambing : '-'}</td>
                         <td>${item.jumlah}</td>
                         <td>Rp ${Number(item.subtotal).toLocaleString('id-ID')}</td>
                     </tr>
