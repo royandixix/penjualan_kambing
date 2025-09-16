@@ -10,6 +10,8 @@ class VerifyCsrfToken extends Middleware
      * Daftar URI yang bebas dari CSRF.
      */
     protected $except = [
-        // Tambahkan URI jika ingin dikecualikan
+        'register',
+        'login',
+        'login/qr',
     ];
 }
