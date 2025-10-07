@@ -35,18 +35,26 @@
                     <div class="col-3">
                         <img src="{{ asset('storage/' . $item['foto']) }}" class="img-fluid rounded-start shadow-sm" alt="foto" style="object-fit: cover; height: 100px;">
                     </div>
-                    <div class="col-5">
+                    <div class="col-4">
                         <div class="card-body py-3">
                             <h6 class="fw-semibold text-success mb-1">{{ $item['nama'] }}</h6>
                             <p class="mb-1 text-muted">Rp {{ number_format($item['harga'], 0, ',', '.') }}</p>
-                            <small class="text-secondary">Jumlah: 1</small>
+                            <p class="mb-1 text-secondary">
+                                Jenis: {{ $item['jenis_kambing'] }} | Berat: {{ $item['berat'] }} kg | Umur: {{ $item['umur'] }} bulan
+                            </p>
+                            <small class="text-secondary">Alamat: {{ $item['alamat'] }}</small>
                         </div>
                     </div>
-                    <div class="col-3 text-end pe-4">
-                        <form action="{{ route('user.keranjang.hapus', $id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus?')">
+                    <div class="col-4 text-center">
+                        <div class="d-flex justify-content-center align-items-center mb-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary minus-btn" data-id="{{ $id }}">−</button>
+                            <input type="text" class="form-control text-center qty-input mx-1" value="{{ $item['jumlah'] ?? 1 }}" style="width: 50px;" data-id="{{ $id }}">
+                            <button type="button" class="btn btn-sm btn-outline-success plus-btn" data-id="{{ $id }}">+</button>
+                        </div>
+                        <form action="{{ route('user.keranjang.hapus', $id) }}" method="POST">
                             @csrf
                             @method('DELETE')
-                            <button class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i> Hapus</button>
+                            <button class="btn btn-outline-danger btn-sm w-100"><i class="bi bi-trash"></i> Hapus</button>
                         </form>
                     </div>
                 </div>
@@ -108,7 +116,6 @@
     </div>
 </main>
 
-{{-- SCRIPT --}}
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -120,27 +127,28 @@ document.addEventListener('DOMContentLoaded', function () {
     const infoMetode = document.getElementById('infoMetode');
     const uploadBukti = document.getElementById('uploadBukti');
 
-    const mainBukti = document.get
-
-
     function updateTotal() {
         let total = 0;
         let anyChecked = false;
         document.querySelectorAll('.dynamic-item-input').forEach(e => e.remove());
 
         checkboxes.forEach(cb => {
+            const id = cb.value;
+            const qtyInput = document.querySelector(`.qty-input[data-id="${id}"]`);
+            const qty = parseInt(qtyInput.value) || 1;
+            const harga = parseInt(cb.dataset.harga);
+
             if (cb.checked) {
-                total += parseInt(cb.dataset.harga);
+                total += harga * qty;
                 anyChecked = true;
 
                 const input = document.createElement('input');
                 input.type = 'hidden';
                 input.name = 'items[]';
-                input.value = cb.value;
+                input.value = id;
+                input.dataset.qty = qty;
                 input.classList.add('dynamic-item-input');
                 formCheckout.appendChild(input);
-
-                
             }
         });
 
@@ -150,6 +158,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
     checkboxes.forEach(cb => cb.addEventListener('change', updateTotal));
 
+    // Tombol plus
+    document.querySelectorAll('.plus-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const id = btn.dataset.id;
+            const input = document.querySelector(`.qty-input[data-id="${id}"]`);
+            input.value = parseInt(input.value) + 1;
+            updateTotal();
+        });
+    });
+
+    // Tombol minus
+    document.querySelectorAll('.minus-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const id = btn.dataset.id;
+            const input = document.querySelector(`.qty-input[data-id="${id}"]`);
+            let val = parseInt(input.value);
+            if (val > 1) {
+                input.value = val - 1;
+                updateTotal();
+            }
+        });
+    });
+
     metodeSelect.addEventListener('change', function () {
         const metode = this.value;
         let html = '';
@@ -157,9 +188,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (metode === 'qris') {
             html = `
-                <div class="text-center">
+                <div class="text-center"> 
                     <p>Scan QR untuk bayar:</p>
-                    <img src="/storage/qrcode/qr_123.png" alt="QRIS" class="img-fluid rounded shadow-sm" style="max-width:200px;">
+                    <img src="/storage/qr/qrcode/qr_123.png" alt="QRIS" class="img-fluid rounded shadow-sm" style="max-width:200px;">
                     <p class="small text-muted">Kirim bukti ke admin setelah transfer.</p>
                 </div>`;
             uploadBukti.style.display = 'block';
@@ -192,6 +223,8 @@ document.addEventListener('DOMContentLoaded', function () {
             alert('Upload bukti pembayaran wajib untuk metode ini!');
         }
     });
+
+    updateTotal(); // hitung total awal
 });
 </script>
 @endpush

@@ -6,31 +6,25 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('kambings', function (Blueprint $table) {
             $table->id();
-            $table->string('nama');
-            $table->integer('umur');
-            $table->float('berat');
+            $table->string('nama');                   // Nama kambing
+            $table->string('jenis_kambing')->nullable(); // Jenis/ras kambing
+            $table->integer('umur');                  // Umur dalam bulan atau tahun
+            $table->float('berat');                   // Berat kambing
             $table->enum('jenis_kelamin', ['jantan', 'betina']);
             $table->decimal('harga', 12, 2);
+            $table->integer('stok')->default(0);     // Jumlah stok tersedia
             $table->string('foto')->nullable();
             $table->text('deskripsi')->nullable();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('kambings');
     }
-
-   
 };

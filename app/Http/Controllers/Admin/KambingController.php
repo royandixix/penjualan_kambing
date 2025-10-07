@@ -12,7 +12,6 @@ class KambingController extends Controller
 {
     public function index()
     {
-        // Pagination 10 item per halaman
         $kambings = Kambing::paginate(10);
         return view('admin.kambing.index', compact('kambings'));
     }
@@ -24,7 +23,6 @@ class KambingController extends Controller
 
     public function store(Request $request)
     {
-        // Hapus simbol dari input sebelum validasi
         $request->merge([
             'berat' => preg_replace('/[^\d.]/', '', $request->berat),
             'harga' => preg_replace('/[^\d]/', '', $request->harga),
@@ -32,16 +30,15 @@ class KambingController extends Controller
 
         $validated = $request->validate([
             'jenis_kambing' => 'required|string|max:255',
-            'umur'          => 'required|integer',
-            'berat'         => 'required|numeric',
+            'umur' => 'required|integer',
+            'berat' => 'required|numeric',
             'jenis_kelamin' => 'required|in:Jantan,Betina',
-            'harga'         => 'required|numeric',
-            'stok'          => 'required|integer|min:0',
-            'deskripsi'     => 'nullable|string',
-            'foto'          => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'harga' => 'required|numeric',
+            'stok' => 'required|integer|min:0',
+            'deskripsi' => 'nullable|string',
+            'foto' => 'nullable|file|max:5120', // semua tipe file, max 5MB
         ]);
 
-        // Simpan foto jika ada
         if ($request->hasFile('foto')) {
             $validated['foto'] = $request->file('foto')->store('foto_kambing', 'public');
         }
@@ -67,18 +64,17 @@ class KambingController extends Controller
 
         $validated = $request->validate([
             'jenis_kambing' => 'required|string|max:255',
-            'umur'          => 'required|integer',
-            'berat'         => 'required|numeric',
+            'umur' => 'required|integer',
+            'berat' => 'required|numeric',
             'jenis_kelamin' => 'required|in:Jantan,Betina',
-            'harga'         => 'required|numeric',
-            'stok'          => 'required|integer|min:0',
-            'deskripsi'     => 'nullable|string',
-            'foto'          => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'harga' => 'required|numeric',
+            'stok' => 'required|integer|min:0',
+            'deskripsi' => 'nullable|string',
+            'foto' => 'nullable|file|max:5120',
         ]);
 
         $kambing = Kambing::findOrFail($id);
 
-        // Hapus foto lama jika ada file baru
         if ($request->hasFile('foto')) {
             if ($kambing->foto && Storage::disk('public')->exists($kambing->foto)) {
                 Storage::disk('public')->delete($kambing->foto);
@@ -106,15 +102,10 @@ class KambingController extends Controller
                          ->with('success', 'Data kambing berhasil dihapus!');
     }
 
-
     public function exportPdf()
     {
         $kambings = Kambing::all();
-
-        // Load view PDF
         $pdf = Pdf::loadView('admin.kambing.laporan_pdf', compact('kambings'));
-
-        // Preview di browser/tab baru
         return $pdf->stream('laporan_kambing_' . date('Y-m-d') . '.pdf');
     }
 }

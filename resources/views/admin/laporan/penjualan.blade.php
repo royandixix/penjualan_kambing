@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Daftar Penjualan')
+@section('title', 'Laporan Penjualan')
 
 @section('content')
 <style>
@@ -16,10 +16,11 @@
 
 <div class="container-fluid">
     <h4 class="mb-4">Daftar Penjualan</h4>
-<!-- 
-    <a href="{{ route('admin.penjualan.exportPdf') }}" target="_blank" class="btn btn-success mb-3">
+
+    <a href="{{ route('admin.laporan.penjualan.cetak') }}" target="_blank" class="btn btn-success mb-3">
         <i class="mdi mdi-file-pdf-outline"></i> Export PDF
-    </a> -->
+    </a>
+    
     
     <div class="table-responsive">
         <table class="table table-bordered table-hover text-center align-middle">

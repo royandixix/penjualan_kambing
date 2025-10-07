@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Auth;
 
 class CheckoutController extends Controller
 {
+    /**
+     * Menyimpan checkout dan detail pesanan
+     */
     public function store(Request $request)
     {
         // Validasi input
@@ -21,7 +24,7 @@ class CheckoutController extends Controller
             'bukti_bayar' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
 
-        // Validasi bukti bayar jika metode perlu
+        // Validasi bukti bayar jika metode QRIS atau Transfer
         if (in_array($request->metode_bayar, ['qris', 'transfer']) && !$request->hasFile('bukti_bayar')) {
             return back()->withErrors(['bukti_bayar' => 'Silakan upload bukti pembayaran.'])->withInput();
         }
@@ -31,7 +34,7 @@ class CheckoutController extends Controller
         $user = Auth::user();
         $total = 0;
 
-        // Upload bukti bayar jika ada
+        // Upload bukti pembayaran
         $buktiPath = null;
         if ($request->hasFile('bukti_bayar')) {
             $buktiPath = $request->file('bukti_bayar')->store('bukti_bayar', 'public');
@@ -49,38 +52,39 @@ class CheckoutController extends Controller
 
         // Simpan detail item pesanan & kurangi stok
         foreach ($items as $id) {
-            if (isset($keranjang[$id])) {
-                $item = $keranjang[$id];
+            if (!isset($keranjang[$id])) continue;
 
-                $kambing = Kambing::find($id);
-                if (!$kambing) continue;
+            $item = $keranjang[$id];
+            $kambing = Kambing::find($id);
+            if (!$kambing) continue;
 
-                // Validasi stok
-                if ($kambing->stok <= 0) {
-                    return back()->withErrors(['stok' => "Stok kambing {$kambing->jenis_kambing} habis!"]);
-                }
-
-                // Buat detail pesanan
-                DetailPesanan::create([
-                    'pesanan_id' => $pesanan->id,
-                    'kambing_id' => $id,
-                    'jumlah' => 1,
-                    'subtotal' => $item['harga'],
-                ]);
-
-                // Kurangi stok
-                $kambing->stok = $kambing->stok - 1;
-                $kambing->save();
-
-                $total += $item['harga'];
-                unset($keranjang[$id]); // hapus dari keranjang
+            // Validasi stok
+            if ($kambing->stok <= 0) {
+                return back()->withErrors(['stok' => "Stok kambing {$kambing->jenis_kambing} habis!"]);
             }
+
+            // Simpan detail pesanan
+            DetailPesanan::create([
+                'pesanan_id' => $pesanan->id,
+                'kambing_id' => $id,
+                'jumlah' => 1,
+                'subtotal' => $item['harga'],
+            ]);
+
+            // Kurangi stok kambing
+            $kambing->stok -= 1;
+            $kambing->save();
+
+            $total += $item['harga'];
+
+            // Hapus item dari keranjang session
+            unset($keranjang[$id]);
         }
 
         // Update total harga pesanan
         $pesanan->update(['total_harga' => $total]);
 
-        // Update atau tambah data pelanggan
+        // Simpan atau update data pelanggan
         Pelanggan::updateOrCreate(
             ['user_id' => $user->id],
             [
@@ -91,9 +95,10 @@ class CheckoutController extends Controller
             ]
         );
 
-        // Kosongkan keranjang dari item yang diproses
+        // Update session keranjang
         session(['keranjang' => $keranjang]);
 
-        return redirect()->route('user.keranjang.index')->with('success', 'Checkout berhasil dan stok otomatis berkurang.');
+        return redirect()->route('user.keranjang.index')
+                         ->with('success', 'Checkout berhasil! Stok kambing otomatis berkurang.');
     }
 }

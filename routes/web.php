@@ -138,10 +138,43 @@ Route::prefix('admin')
          
 
         // Laporan
+        // Laporan
         Route::prefix('laporan')->name('laporan.')->group(function () {
+            // Laporan utama
             Route::get('/', [LaporanController::class, 'index'])->name('index');
             Route::get('/cetak', [LaporanController::class, 'cetak'])->name('cetak');
+        
+            // ====================
+            // Laporan Kambing
+            // ====================
+            Route::get('/kambing', [LaporanController::class, 'laporanKambing'])->name('kambing');
+            Route::get('/kambing/cetak', [LaporanController::class, 'cetakKambing'])->name('kambing.cetak');
+        
+            // ====================
+            // Laporan Pelanggan
+            // ====================
+            Route::get('/pelanggan', [LaporanController::class, 'laporanPelanggan'])->name('pelanggan');
+            Route::get('/pelanggan/cetak', [LaporanController::class, 'cetakPelanggan'])->name('pelanggan.cetak');
+        
+            // ====================
+            // Laporan Pembayaran
+            // ====================
+            Route::get('/pembayaran_kambing', [LaporanController::class, 'laporanPembayaranKambing'])->name('pembayaran_kambing');
+            Route::get('/pembayaran_kambing/cetak', [LaporanController::class, 'cetakPembayaranKambing'])->name('pembayaran_kambing.cetak');
+        
+            // ====================
+            // Laporan Pemesanan
+            // ====================
+            Route::get('/pemesanan', [LaporanController::class, 'laporanPemesanan'])->name('pemesanan');
+            Route::get('/pemesanan/cetak', [LaporanController::class, 'cetakPemesanan'])->name('pemesanan.cetak');
+        
+            // ====================
+            // Laporan Penjualan
+            // ====================
+            Route::get('/penjualan', [LaporanController::class, 'laporanPenjualan'])->name('penjualan');
+            Route::get('/penjualan/cetak', [LaporanController::class, 'cetakPenjualan'])->name('penjualan.cetak');
         });
+
     });
 
 // ====================

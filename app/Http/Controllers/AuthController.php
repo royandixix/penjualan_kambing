@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use App\Models\User;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use GuzzleHttp\Client;
 
 class AuthController extends Controller
@@ -25,22 +26,23 @@ class AuthController extends Controller
         return view('auth.register');
     }
 
-    // Proses registrasi
+    // Proses registrasi user baru
     public function register(Request $request)
     {
+        // Validasi data input (hapus min:6 dari password)
         $validated = $request->validate([
             'name'     => 'required|string|max:255',
             'email'    => 'required|email|unique:users,email',
             'no_hp'    => 'nullable|string|max:20',
             'alamat'   => 'nullable|string|max:255',
-            'password' => 'required|confirmed',
+            'password' => 'required|confirmed', // <--- di sini
             'role'     => 'required|in:Admin,Pembeli',
         ]);
 
-        // Generate token unik untuk QR
+        // Generate token unik untuk QR code
         $qrToken = Str::random(32);
 
-        // Buat user baru
+        // Simpan user baru ke database
         $user = User::create([
             'name'     => $validated['name'],
             'email'    => $validated['email'],
@@ -51,16 +53,17 @@ class AuthController extends Controller
             'qr_token' => $qrToken,
         ]);
 
-        // Simpan QR code ke storage/public/qr
+        // Generate dan simpan QR code ke storage/app/public/qr/{user_id}.png pakai GD renderer
         $qrPath = "qr/{$user->id}.png";
-        \Illuminate\Support\Facades\Storage::disk('public')->put(
+        Storage::disk('public')->put(
             $qrPath,
-            QrCode::format('png')->size(300)->generate($qrToken)
+            QrCode::size(300)->generate($qrToken)
         );
+        
 
-        // Ambil URL ngrok terbaru dari API lokal
-        $ngrokBaseUrl = $this->getNgrokUrl() ?: env('APP_URL', 'http://localhost:8000');
-        $qrUrl = $ngrokBaseUrl . "/storage/qr/{$user->id}.png";
+        // Ambil URL ngrok terbaru dari API lokal, fallback ke APP_URL
+        $ngrokBaseUrl = $this->getNgrokUrl() ?: env('APP_URL', url('/'));
+        $qrUrl = $ngrokBaseUrl . "/storage/{$qrPath}";
 
         // Konversi nomor WA ke format internasional (tanpa +)
         $waNumber = $user->no_hp;
@@ -68,24 +71,22 @@ class AuthController extends Controller
             $waNumber = '62' . substr($waNumber, 1);
         }
 
+        // Kirim pesan WhatsApp dengan QR code URL
         if ($waNumber) {
             try {
                 $client = new Client();
 
-                // Kirim pesan WA via Fonnte
                 $response = $client->post('https://api.fonnte.com/send', [
                     'headers' => [
                         'Authorization' => env('FONNTE_TOKEN'),
                     ],
                     'form_params' => [
                         'target'  => $waNumber,
-                        'message' => "Halo {$user->name},\n\nSelamat! Kamu sudah berhasil mendaftar di sistem Kamberu.\n\nUntuk mempermudah login, kami sudah membuatkan QR Code khusus untuk akunmu. Kamu bisa klik link berikut untuk melihat QR Code login langsung dari HP atau device lain:\n\n$qrUrl\n\nQR Code ini bersifat pribadi, jangan bagikan ke orang lain.\n\nTerima kasih telah mendaftar, semoga pengalamanmu menyenangkan!\n\n— Tim Kamberu",
+                        'message' => "Halo {$user->name},\n\nSelamat! Kamu sudah berhasil mendaftar di sistem Kamberu.\n\nQR Code login kamu bisa diakses melalui link ini:\n$qrUrl\n\nJangan bagikan QR Code ini ke orang lain ya.\n\nTerima kasih!",
                     ],
                 ]);
 
-                // 🔥 Cek respon dari Fonnte
-                $body = $response->getBody()->getContents();
-                Log::info("WA Response untuk {$waNumber}, User ID {$user->id}: " . $body);
+                Log::info("WA Response untuk {$waNumber}, User ID {$user->id}: " . $response->getBody()->getContents());
 
             } catch (\Exception $e) {
                 Log::error("Gagal kirim WA ke {$waNumber}, User ID {$user->id}: " . $e->getMessage());
@@ -94,11 +95,10 @@ class AuthController extends Controller
             Log::warning("Nomor WA kosong, tidak bisa kirim QR: User ID {$user->id}");
         }
 
-        return redirect()->route('login')
-            ->with('success', 'Pendaftaran berhasil! QR Code sudah dibuat dan dikirim ke WhatsApp.');
+        return redirect()->route('login')->with('success', 'Pendaftaran berhasil! QR Code sudah dibuat dan dikirim ke WhatsApp.');
     }
 
-    // Ambil URL ngrok terbaru dari API lokal
+    // Ambil URL ngrok dari API lokal (opsional)
     private function getNgrokUrl()
     {
         try {
@@ -117,12 +117,12 @@ class AuthController extends Controller
         return null;
     }
 
-    // Proses login normal
+    // Proses login username + password
     public function login(Request $request)
     {
         $credentials = $request->validate([
             'name'     => 'required|string',
-            'password' => 'required',
+            'password' => 'required|string',
         ]);
 
         if (Auth::attempt(['name' => $credentials['name'], 'password' => $credentials['password']])) {
@@ -133,10 +133,13 @@ class AuthController extends Controller
         return redirect()->back()->with('error', 'Nama atau password salah.');
     }
 
-    // Proses login dengan QR
+    // Proses login dengan QR token
     public function loginWithQr(Request $request)
     {
-        $request->validate(['qr_token' => 'required|string']);
+        $request->validate([
+            'qr_token' => 'required|string',
+        ]);
+
         $user = User::where('qr_token', $request->qr_token)->first();
 
         if ($user) {
@@ -148,7 +151,7 @@ class AuthController extends Controller
         return redirect()->back()->with('error', 'QR Code tidak valid.');
     }
 
-    // Helper redirect berdasarkan role
+    // Helper redirect berdasarkan role user
     private function redirectByRole($user)
     {
         if ($user->role === 'Admin') {
@@ -161,12 +164,13 @@ class AuthController extends Controller
         return redirect()->route('login')->with('error', 'Peran tidak dikenali.');
     }
 
-    // Logout
+    // Logout user
     public function logout(Request $request)
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
         return redirect()->route('login')->with('success', 'Anda telah logout.');
     }
 }

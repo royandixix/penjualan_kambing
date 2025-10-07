@@ -49,11 +49,11 @@
             <i class="mdi mdi-credit-card-plus-outline"></i> Tambah Pembayaran
         </a>
     </div> --}}
-
+<!-- 
     <a href="{{ route('admin.pembayaran.cetak_pdf') }}" target="_blank" class="btn btn-danger">
         <i class="mdi mdi-file-pdf"></i> Cetak PDF
     </a>
-    
+     -->
     
 
         <div class="table-responsive">

@@ -56,10 +56,10 @@
             <i class="mdi mdi-account-plus-outline"></i> Tambah Pelanggan
         </a>
     </div>
-    <a href="{{ route('admin.pelanggan.exportPdf') }}" class="btn btn-success mb-3">
+    <!-- <a href="{{ route('admin.pelanggan.exportPdf') }}" class="btn btn-success mb-3">
         <i class="mdi mdi-file-pdf-outline"></i> Export PDF
     </a>
-    
+     -->
 
     <div class="table-responsive">
         <table class="table table-bordered table-hover align-middle shadow-sm">
@@ -86,6 +86,7 @@
                             <a href="{{ route('admin.pelanggan.edit', $user->id) }}" class="btn btn-sm btn-outline-warning btn-action d-flex justify-content-center align-items-center gap-1">
                                 <i class="mdi mdi-pencil-outline"></i> Edit
                             </a>
+                      
                             <form action="{{ route('admin.pelanggan.destroy', $user->id) }}" method="POST" class="form-delete">
                                 @csrf
                                 @method('DELETE')

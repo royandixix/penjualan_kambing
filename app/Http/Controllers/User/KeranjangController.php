@@ -8,13 +8,17 @@ use Illuminate\Http\Request;
 
 class KeranjangController extends Controller
 {
+    /**
+     * Menampilkan halaman keranjang
+     */
     public function index()
     {
         return view('user.keranjang.keranjang');
     }
 
-    
-
+    /**
+     * Menampilkan halaman checkout
+     */
     public function checkout()
     {
         $keranjang = session('keranjang', []);
@@ -23,22 +27,35 @@ class KeranjangController extends Controller
         return view('user.checkout', compact('keranjang', 'total'));
     }
 
+    /**
+     * Menambahkan kambing ke keranjang
+     */
     public function tambah(Request $request, $id)
-    {
-        $kambing = Kambing::findOrFail($id);
+{
+    $kambing = Kambing::findOrFail($id);
 
-        $keranjang = session()->get('keranjang', []);
-        $keranjang[$id] = [
-            'nama' => $kambing->nama,
-            'harga' => $kambing->harga,
-            'foto' => $kambing->foto,
-        ];
-        session()->put('keranjang', $keranjang);
+    $keranjang = session()->get('keranjang', []);
+    $keranjang[$id] = [
+    'nama' => $kambing->nama,
+    'harga' => $kambing->harga,
+    'foto' => $kambing->foto,
+    'jenis_kambing' => $kambing->jenis_kambing ?? '-',
+    'berat' => $kambing->berat ?? 0,
+    'umur' => $kambing->umur ?? 0,
+    'alamat' => $kambing->alamat ?? '-',
+    'jumlah' => $keranjang[$id]['jumlah'] ?? 1, // default 1
+];
 
-        return redirect()->back()->with('success', 'Kambing berhasil ditambahkan ke keranjang!');
-        
-    }
 
+    session()->put('keranjang', $keranjang);
+
+    return redirect()->back()->with('success', 'Kambing berhasil ditambahkan ke keranjang!');
+}
+
+
+    /**
+     * Menghapus item dari keranjang
+     */
     public function hapus($id)
     {
         $keranjang = session()->get('keranjang');
