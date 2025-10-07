@@ -54,3 +54,4 @@ Selamat! Kamu berhasil mendaftar di sistem Kamberu.
 
 Untuk login, klik link QR Code berikut:
 https://xxxx.ngrok-free.app/storage/qr/5.png
+# penjualan_kambing
