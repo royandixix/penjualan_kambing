@@ -141,6 +141,8 @@
             @endforeach
         </tbody>
 
+        
+
         @if(count($penjualans) > 0)
         <tfoot>
             <tr>

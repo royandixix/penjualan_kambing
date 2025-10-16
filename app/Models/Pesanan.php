@@ -36,4 +36,6 @@ class Pesanan extends Model
     {
         return 'Rp' . number_format($this->total_harga, 0, ',', '.');
     }
+
+    
 }

@@ -44,38 +44,35 @@
                         <p class="small mb-3 text-secondary">
                             Alamat pengiriman: {{ Auth::user()->alamat ?? '-' }}
                         </p>
-                        
-                        @foreach($pesanan->kambings as $kambing)
+
+                        <!-- DAFTAR ITEM DALAM PESANAN -->
+                        @foreach($pesanan->detailPesanans as $detail)
+                            @php $produk = $detail->kambing; @endphp
                             <div class="row g-0 align-items-center mb-3 border-bottom pb-2">
                                 <div class="col-3">
-                                    <img src="{{ asset('storage/' . $kambing->foto) }}" 
+                                    <img src="{{ asset('storage/' . ($produk->foto ?? 'default.jpg')) }}" 
                                          class="img-fluid rounded shadow-sm" 
                                          alt="foto" 
                                          style="object-fit: cover; height: 80px;">
                                 </div>
                                 <div class="col-6 ps-3">
-                                    <h6 class="fw-semibold text-success mb-1">{{ $kambing->nama }}</h6>
-                                    
-                                    <!-- Info tambahan di dalam card -->
+                                    <h6 class="fw-semibold text-success mb-1">{{ $produk->nama ?? 'Produk Tidak Ditemukan' }}</h6>
+
                                     <div class="small text-secondary mb-1">
-                                        Temukan Kambing Terbaik Siap Jual di Bawah Ini:<br>
                                         Ready Stock<br>
-                                        Jenis: {{ $kambing->jenis ?? 'Kambing Luwu' }}<br>
-                                        Umur: {{ $kambing->umur ?? '20 bulan' }}<br>
-                                        Berat: {{ $kambing->berat ?? '50 kg' }}
+                                        Jenis: {{ $produk->jenis_kambing ?? '-' }}<br>
+                                        Umur: {{ $produk->umur ?? '-' }} bulan<br>
+                                        Berat: {{ $produk->berat ?? '-' }} kg
                                     </div>
 
-                                    <p class="mb-1 text-muted">
-                                        Rp {{ number_format($kambing->pivot->harga_satuan ?? 0, 0, ',', '.') }}
-                                    </p>
                                     <small class="text-secondary">
-                                        Jumlah: {{ $kambing->pivot->jumlah ?? 1 }}
+                                        Jumlah: {{ $detail->jumlah ?? 1 }}
                                     </small>
                                 </div>
                                 <div class="col-3 text-end">
                                     <span class="fw-bold">Subtotal</span><br>
                                     <span class="text-success">
-                                        Rp {{ number_format($kambing->pivot->subtotal ?? 0, 0, ',', '.') }}
+                                        Rp {{ number_format($detail->subtotal ?? 0, 0, ',', '.') }}
                                     </span>
                                 </div>
                             </div>

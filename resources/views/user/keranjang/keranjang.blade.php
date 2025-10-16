@@ -154,6 +154,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         totalHarga.textContent = "Rp " + total.toLocaleString('id-ID');
         btnOpenModal.disabled = !anyChecked;
+
     }
 
     checkboxes.forEach(cb => cb.addEventListener('change', updateTotal));
