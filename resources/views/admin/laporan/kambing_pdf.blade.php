@@ -12,12 +12,13 @@
             margin: 25px;
             padding: 0;
             line-height: 1.5;
+            background-color: #fff;
         }
 
         :root {
-            --primary-color: #004d99;
-            --header-bg: #eaf6ff;
-            --highlight-bg: #fffacd;
+            --primary-color: #2e7d32; /* Hijau utama */
+            --header-bg: #e8f5e9;     /* Hijau muda */
+            --highlight-bg: #f1f8e9;  /* Hijau sangat muda */
         }
 
         header {
@@ -26,6 +27,7 @@
             border-bottom: 4px solid var(--primary-color);
             padding-bottom: 15px;
         }
+
         header h1 {
             margin: 0;
             font-size: 26pt;
@@ -33,11 +35,13 @@
             font-weight: 800;
             text-transform: uppercase;
         }
+
         header p {
             margin: 3px 0 0 0;
             font-size: 10pt;
             color: #555;
         }
+
         header h2 {
             font-size: 18pt;
             margin: 20px 0 0;
@@ -53,12 +57,15 @@
             margin-top: 20px;
             border: 1px solid #ccc;
         }
+
         th, td {
             border: 1px solid #e0e0e0;
             padding: 8px 10px;
             text-align: center;
             vertical-align: top;
+            font-size: 10pt;
         }
+
         th {
             background-color: var(--header-bg);
             color: var(--primary-color);
@@ -66,8 +73,14 @@
             font-size: 10pt;
             text-transform: uppercase;
         }
+
         tbody tr:nth-child(odd) {
-            background-color: #fcfcfc;
+            background-color: #fafafa;
+        }
+
+        tbody tr:hover {
+            background-color: var(--highlight-bg);
+            transition: background-color 0.2s ease-in-out;
         }
 
         .right { text-align: right; }
@@ -77,17 +90,24 @@
         .data-col {
             text-align: right;
             background-color: var(--highlight-bg);
+            color: var(--primary-color);
+            font-weight: bold;
         }
+
         .data-col-center {
             text-align: center;
             background-color: var(--highlight-bg);
+            color: var(--primary-color);
+            font-weight: bold;
         }
 
         .print-info {
             margin-top: 30px;
             text-align: right;
             font-size: 9pt;
-            color: #777;
+            color: var(--primary-color);
+            border-top: 2px solid var(--primary-color);
+            padding-top: 5px;
         }
     </style>
 </head>
@@ -95,7 +115,7 @@
     <header>
         <h1>TERNAK KAMBING</h1>
         <p>Jl. Tani, No.62, Kec. Belopa, Kab. Luwu</p>
-        <p>Email: info@ternakkambing.com (Contoh)</p>
+        <p>Email: info@ternakkambing.com </p>
         <h2>LAPORAN DATA KAMBING</h2>
     </header>
     

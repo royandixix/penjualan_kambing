@@ -22,10 +22,13 @@
 <div class="container-fluid">
     <h4 class="mb-4">Laporan Kambing</h4>
 
-    <!-- Tombol Cetak PDF -->
+    <!-- Tombol Cetak PDF & Excel -->
     <div class="mb-3">
         <a href="{{ route('admin.laporan.kambing.cetak') }}" target="_blank" class="btn btn-success">
             <i class="mdi mdi-file-pdf-outline"></i> Cetak PDF
+        </a>
+        <a href="{{ route('admin.laporan.kambing.excel') }}" class="btn btn-primary">
+            <i class="mdi mdi-file-excel-outline"></i> Export Excel
         </a>
     </div>
 

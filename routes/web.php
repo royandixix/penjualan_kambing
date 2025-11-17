@@ -3,8 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\User\CheckoutController;
-use App\Http\Controllers\User\QRCodeController;
 
 // Admin Controllers
 use App\Http\Controllers\Admin\KambingController as AdminKambingController;
@@ -14,189 +12,132 @@ use App\Http\Controllers\Admin\PembayaranController;
 use App\Http\Controllers\Admin\LaporanController;
 use App\Http\Controllers\Admin\PelangganController as AdminPelangganController;
 use App\Http\Controllers\Admin\PenjualanController as AdminPenjualanController;
+use App\Http\Controllers\Admin\DashboardController;
 
 // User Controllers
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\KambingController as UserKambingController;
 use App\Http\Controllers\User\KeranjangController;
+use App\Http\Controllers\User\CheckoutController;
 use App\Http\Controllers\User\RiwayatController;
 use App\Http\Controllers\User\PesananController as UserPesananController;
+use App\Http\Controllers\User\QRCodeController;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes
+| WEB ROUTES
 |--------------------------------------------------------------------------
 */
 
 // ====================
-// ROUTE UNTUK SERVE QR CODE (ngrok friendly)
-// ====================
-Route::get('/storage/qr/{filename}', function ($filename) {
-    $path = storage_path('app/public/qr/' . $filename);
-
-    if (!file_exists($path)) {
-        abort(404);
-    }
-
-    return response()->file($path);
-});
-
-// ====================
-// ROUTE AWAL
+// HALAMAN AWAL
 // ====================
 Route::get('/', function () {
     $user = Auth::user();
-
     if ($user) {
-        return redirect($user->role === 'admin' ? '/admin' : '/user');
+        return redirect($user->role === 'Admin' ? '/admin' : '/user');
     }
-
     return redirect()->route('login');
 });
 
 // ====================
-// AUTH ROUTES
+// AUTH
 // ====================
+Route::get('/show-qr/{user}', [AuthController::class, 'showLink'])->name('qrcode.showLink');
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register'])->name('register.post');
+Route::post('/login/qr', [AuthController::class, 'loginWithQr'])->name('login.qr');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
-Route::post('/login-qr', [AuthController::class, 'loginWithQr'])->name('login.qr');
 
 // ====================
 // ADMIN AREA
 // ====================
-Route::prefix('admin')
-    ->name('admin.')
-    ->middleware(['auth'])
-    ->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
 
-        Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
-        Route::get('/', [AdminKambingController::class, 'index'])->name('home');
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Kambing
+    Route::resource('kambing', AdminKambingController::class)->except(['show']);
+    Route::get('kambing/export-pdf', [AdminKambingController::class, 'exportPdf'])->name('kambing.exportPdf');
+
+    // Pengguna
+    Route::resource('pengguna', PenggunaController::class)->except(['show']);
+
+    // Pelanggan
+    Route::resource('pelanggan', AdminPelangganController::class)->except(['show']);
+    Route::get('pelanggan/export-pdf', [AdminPelangganController::class, 'exportPdf'])->name('pelanggan.exportPdf');
+
+    // Penjualan
+    Route::resource('penjualan', AdminPenjualanController::class)->except(['show']);
+    Route::get('penjualan/export-pdf', [AdminPenjualanController::class, 'exportPdf'])->name('penjualan.exportPdf');
+
+    // Pesanan
+    Route::resource('pesanan', AdminPesananController::class);
+    Route::put('pesanan/{id}/status', [AdminPesananController::class, 'updateStatus'])->name('pesanan.updateStatus');
+
+    // Pembayaran
+    Route::resource('pembayaran', PembayaranController::class)->except(['edit', 'update', 'destroy']);
+    Route::get('pembayaran/cetak-pdf', [PembayaranController::class, 'cetakPdf'])->name('pembayaran.cetak_pdf');
+
+    // ====================
+    // LAPORAN
+    // ====================
+    Route::prefix('laporan')->name('laporan.')->group(function () {
+
+        Route::get('/', [LaporanController::class, 'index'])->name('index');
+        Route::get('/cetak', [LaporanController::class, 'cetak'])->name('cetak');
 
         // Kambing
-        Route::prefix('kambing')->name('kambing.')->group(function () {
-            Route::get('/', [AdminKambingController::class, 'index'])->name('index');
-            Route::get('/tambah', [AdminKambingController::class, 'create'])->name('tambah');
-            Route::post('/', [AdminKambingController::class, 'store'])->name('store');
-            Route::get('/edit/{id}', [AdminKambingController::class, 'edit'])->name('edit');
-            Route::put('/update/{id}', [AdminKambingController::class, 'update'])->name('update');
-            Route::delete('/destroy/{id}', [AdminKambingController::class, 'destroy'])->name('destroy');
-            Route::get('/export-pdf', [AdminKambingController::class, 'exportPdf'])->name('exportPdf');
-        });
-
-        // Pengguna
-        Route::prefix('pengguna')->name('pengguna.')->group(function () {
-            Route::get('/', [PenggunaController::class, 'index'])->name('index');
-            Route::get('/tambah', [PenggunaController::class, 'create'])->name('tambah');
-            Route::post('/', [PenggunaController::class, 'store'])->name('store');
-            Route::get('/edit/{id}', [PenggunaController::class, 'edit'])->name('edit');
-            Route::put('/update/{id}', [PenggunaController::class, 'update'])->name('update');
-            Route::delete('/destroy/{id}', [PenggunaController::class, 'destroy'])->name('destroy');
-        });
+        Route::get('/kambing', [LaporanController::class, 'laporanKambing'])->name('kambing');
+        Route::get('/kambing/cetak', [LaporanController::class, 'cetakKambing'])->name('kambing.cetak');
+        Route::get('/kambing/excel', [LaporanController::class, 'exportKambingExcel'])->name('kambing.excel');
 
         // Pelanggan
-        Route::prefix('pelanggan')->name('pelanggan.')->group(function () {
-            Route::get('/', [AdminPelangganController::class, 'index'])->name('index');
-            Route::get('/tambah', [AdminPelangganController::class, 'create'])->name('tambah');
-            Route::post('/', [AdminPelangganController::class, 'store'])->name('store');
-            Route::get('/edit/{id}', [AdminPelangganController::class, 'edit'])->name('edit');
-            Route::put('/update/{id}', [AdminPelangganController::class, 'update'])->name('update');
-            Route::delete('/destroy/{id}', [AdminPelangganController::class, 'destroy'])->name('destroy');
-            Route::get('/export-pdf', [AdminPelangganController::class, 'exportPdf'])->name('exportPdf');
-        });
-
-        // Penjualan
-        Route::prefix('penjualan')->name('penjualan.')->group(function () {
-            Route::get('/', [AdminPenjualanController::class, 'index'])->name('index');
-            Route::get('/tambah', [AdminPenjualanController::class, 'create'])->name('tambah');
-            Route::post('/', [AdminPenjualanController::class, 'store'])->name('store');
-            Route::get('/edit/{id}', [AdminPenjualanController::class, 'edit'])->name('edit');
-            Route::put('/update/{id}', [AdminPenjualanController::class, 'update'])->name('update');
-            Route::delete('/destroy/{id}', [AdminPenjualanController::class, 'destroy'])->name('destroy');
-            Route::get('/export-pdf', [AdminPenjualanController::class, 'exportPdf'])->name('exportPdf');
-        });
-
-        // Pesanan
-        Route::prefix('pesanan')->name('pesanan.')->group(function () {
-            Route::get('/', [AdminPesananController::class, 'index'])->name('index');
-            Route::get('/{id}', [AdminPesananController::class, 'show'])->name('show');
-            Route::put('/{id}/status', [AdminPesananController::class, 'updateStatus'])->name('updateStatus');
-            Route::delete('/{id}', [AdminPesananController::class, 'destroy'])->name('destroy');
-        });
+        Route::get('/pelanggan', [LaporanController::class, 'laporanPelanggan'])->name('pelanggan');
+        Route::get('/pelanggan/cetak', [LaporanController::class, 'cetakPelanggan'])->name('pelanggan.cetak');
+        Route::get('/pelanggan/excel', [LaporanController::class, 'exportPelangganExcel'])->name('pelanggan.excel');
 
         // Pembayaran
-        Route::prefix('pembayaran')->name('pembayaran.')->group(function () {
-            Route::get('/', [PembayaranController::class, 'index'])->name('index');
-            Route::get('/tambah', [PembayaranController::class, 'create'])->name('tambah');
-            Route::post('/tambah', [PembayaranController::class, 'store'])->name('store');
-            Route::get('/cetak-pdf', [PembayaranController::class, 'cetakPdf'])->name('cetak_pdf'); // pindah ke atas
-            Route::get('/{id}', [PembayaranController::class, 'show'])->name('show');
-        });
-         
+        Route::get('/pembayaran_kambing', [LaporanController::class, 'laporanPembayaranKambing'])->name('pembayaran_kambing');
+        Route::get('/pembayaran_kambing/cetak', [LaporanController::class, 'cetakPembayaranKambing'])->name('pembayaran_kambing.cetak');
 
-        // Laporan
-        // Laporan
-        Route::prefix('laporan')->name('laporan.')->group(function () {
-            // Laporan utama
-            Route::get('/', [LaporanController::class, 'index'])->name('index');
-            Route::get('/cetak', [LaporanController::class, 'cetak'])->name('cetak');
-        
-            // ====================
-            // Laporan Kambing
-            // ====================
-            Route::get('/kambing', [LaporanController::class, 'laporanKambing'])->name('kambing');
-            Route::get('/kambing/cetak', [LaporanController::class, 'cetakKambing'])->name('kambing.cetak');
-        
-            // ====================
-            // Laporan Pelanggan
-            // ====================
-            Route::get('/pelanggan', [LaporanController::class, 'laporanPelanggan'])->name('pelanggan');
-            Route::get('/pelanggan/cetak', [LaporanController::class, 'cetakPelanggan'])->name('pelanggan.cetak');
-        
-            // ====================
-            // Laporan Pembayaran
-            // ====================
-            Route::get('/pembayaran_kambing', [LaporanController::class, 'laporanPembayaranKambing'])->name('pembayaran_kambing');
-            Route::get('/pembayaran_kambing/cetak', [LaporanController::class, 'cetakPembayaranKambing'])->name('pembayaran_kambing.cetak');
-        
-            // ====================
-            // Laporan Pemesanan
-            // ====================
-            Route::get('/pemesanan', [LaporanController::class, 'laporanPemesanan'])->name('pemesanan');
-            Route::get('/pemesanan/cetak', [LaporanController::class, 'cetakPemesanan'])->name('pemesanan.cetak');
-        
-            // ====================
-            // Laporan Penjualan
-            // ====================
-            Route::get('/penjualan', [LaporanController::class, 'laporanPenjualan'])->name('penjualan');
-            Route::get('/penjualan/cetak', [LaporanController::class, 'cetakPenjualan'])->name('penjualan.cetak');
-        });
+        // Pemesanan
+        Route::get('/pemesanan', [LaporanController::class, 'laporanPemesanan'])->name('pemesanan');
+        Route::get('/pemesanan/cetak', [LaporanController::class, 'cetakPemesanan'])->name('pemesanan.cetak');
+        Route::get('/pemesanan/excel', [LaporanController::class, 'exportPemesananExcel'])->name('pemesanan.excel');
 
+        // Penjualan
+        Route::get('/penjualan', [LaporanController::class, 'laporanPenjualan'])->name('penjualan');
+        Route::get('/penjualan/cetak', [LaporanController::class, 'cetakPenjualan'])->name('penjualan.cetak');
+        Route::get('/penjualan/excel', [LaporanController::class, 'exportPenjualanExcel'])->name('penjualan.excel');
     });
+});
 
 // ====================
 // USER AREA
 // ====================
-Route::prefix('user')
-    ->name('user.')
-    ->middleware(['auth'])
-    ->group(function () {
-        Route::get('/', [UserController::class, 'index'])->name('index');
-        Route::get('/kambing', [UserKambingController::class, 'index'])->name('kambing');
-        Route::get('/kambing/{id}/beli', [UserKambingController::class, 'beli'])->name('kambing.beli');
-        Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang.index');
-        Route::post('/keranjang/tambah/{id}', [KeranjangController::class, 'tambah'])->name('keranjang.tambah');
-        Route::delete('/keranjang/{id}', [KeranjangController::class, 'hapus'])->name('keranjang.hapus');
-        Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-        Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout');
-        Route::get('/riwayat', [RiwayatController::class, 'index'])->name('riwayat');
-        Route::get('/pesanan', [UserPesananController::class, 'index'])->name('pesanan');
-        Route::get('/beli/{id}', [UserPesananController::class, 'beli'])->name('beli');
-        Route::post('/beli/{id}', [UserPesananController::class, 'beli'])->name('beli.post');
-        Route::get('/qrcode/{id}', [QRCodeController::class, 'generate'])->name('qrcode');
-        Route::get('/qrcode/generate/{id}', [QRCodeController::class, 'generate'])->name('qrcode.generate');
-        Route::get('/qrcode/show/{id}', [QRCodeController::class, 'show'])->name('qrcode.show');
-    });
+Route::prefix('user')->name('user.')->middleware(['auth'])->group(function () {
+    Route::get('/', [UserController::class, 'index'])->name('index');
+    Route::get('/kambing', [UserKambingController::class, 'index'])->name('kambing');
+    Route::get('/kambing/{id}/beli', [UserKambingController::class, 'beli'])->name('kambing.beli');
+
+    // Keranjang & Checkout
+    Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang.index');
+    Route::post('/keranjang/tambah/{id}', [KeranjangController::class, 'tambah'])->name('keranjang.tambah');
+    Route::delete('/keranjang/{id}', [KeranjangController::class, 'hapus'])->name('keranjang.hapus');
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout');
+
+    // Pesanan & Riwayat
+    Route::get('/riwayat', [RiwayatController::class, 'index'])->name('riwayat');
+    Route::get('/pesanan', [UserPesananController::class, 'index'])->name('pesanan');
+    Route::get('/beli/{id}', [UserPesananController::class, 'beli'])->name('beli');
+    Route::post('/beli/{id}', [UserPesananController::class, 'beli'])->name('beli.post');
+
+    // QR Code
+    Route::get('/qrcode/{id}', [QRCodeController::class, 'generate'])->name('qrcode');
+    Route::get('/qrcode/generate/{id}', [QRCodeController::class, 'generate'])->name('qrcode.generate');
+    Route::get('/qrcode/show/{id}', [QRCodeController::class, 'show'])->name('qrcode.show');
+});

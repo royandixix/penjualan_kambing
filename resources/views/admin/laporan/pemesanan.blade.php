@@ -6,10 +6,13 @@
 <div class="container-fluid">
     <h4 class="mb-4 fw-bold"><i class="bi bi-list-check"></i> Laporan Pesanan</h4>
 
-    {{-- Tombol Export PDF --}}
+    {{-- Tombol Export PDF & Excel --}}
     <div class="mb-3">
         <a href="{{ route('admin.laporan.pemesanan.cetak') }}" target="_blank" class="btn btn-danger">
             <i class="bi bi-file-earmark-pdf-fill"></i> Export PDF
+        </a>
+        <a href="{{ route('admin.laporan.pemesanan.excel') }}" target="_blank" class="btn btn-primary">
+            <i class="bi bi-file-earmark-excel-fill"></i> Export Excel
         </a>
     </div>
 

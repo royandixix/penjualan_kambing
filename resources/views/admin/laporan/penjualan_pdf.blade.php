@@ -15,10 +15,10 @@
         }
 
         :root {
-            --primary-color: #004d99;
-            --header-bg: #eaf6ff;
-            --footer-bg: #d9edf7;
-            --highlight-bg: #fffacd;
+            --primary-color: #007f3f;   /* Hijau utama */
+            --header-bg: #e9f9f0;       /* Hijau muda */
+            --footer-bg: #d6f5df;       /* Hijau lembut */
+            --highlight-bg: #f2fff6;    /* Hijau sangat muda */
         }
 
         header {
@@ -27,6 +27,7 @@
             border-bottom: 4px solid var(--primary-color);
             padding-bottom: 15px;
         }
+
         header h1 {
             margin: 0;
             font-size: 26pt;
@@ -34,11 +35,13 @@
             font-weight: 800;
             text-transform: uppercase;
         }
+
         header p {
             margin: 3px 0 0 0;
             font-size: 10pt;
             color: #555;
         }
+
         header h2 {
             font-size: 18pt;
             margin: 20px 0 0;
@@ -51,16 +54,18 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: 15px;
             border: 1px solid #ccc;
         }
+
         th, td {
-            border: 1px solid #e0e0e0;
+            border: 1px solid #dceedd;
             padding: 8px 10px;
             text-align: left;
             vertical-align: top;
             font-size: 10pt;
         }
+
         th {
             background-color: var(--header-bg);
             color: var(--primary-color);
@@ -69,42 +74,54 @@
             text-transform: uppercase;
             text-align: center;
         }
+
         tbody tr:nth-child(odd) {
-            background-color: #fcfcfc;
+            background-color: #f9fff9;
         }
 
         .right { text-align: right; }
         .center { text-align: center; }
         .left { text-align: left; }
-        
+
         .total-col {
             font-weight: 700;
             text-align: right;
-            background-color: var(--highlight-bg); 
+            background-color: var(--highlight-bg);
+            color: var(--primary-color);
         }
+
         th.total-col {
             background-color: var(--header-bg);
-            color: #d9534f;
+            color: var(--primary-color);
+        }
+
+        tfoot td {
+            background-color: var(--footer-bg);
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 11pt;
+            border-top: 3px solid var(--primary-color);
         }
 
         .print-info {
-            margin-top: 30px;
-            text-align: right;
+            margin-top: 10px;
+            text-align: left;
             font-size: 9pt;
-            color: #777;
+            color: #555;
         }
     </style>
 </head>
+
 <body>
     <header>
         <h1>TERNAK KAMBING</h1>
-        <p>Jl. Tani, No.62, Kec. Belopa, Kan. Luwu</p>
-        <p>Telp: 085299006996 | Email: ternakkambing@email.com (Contoh)</p>
+        <p>Jl. Tani, No.62, Kec. Belopa, Kab. Luwu</p>
+        <p>Telp: 085299006996 | Email: ternakkambing@email.com  </p>
         <h2>LAPORAN PENJUALAN</h2>
     </header>
 
-    <p class="print-info" style="text-align: left; margin-top: 0; margin-bottom: 15px;">
-        Tanggal Cetak: **{{ now()->format('d/m/Y H:i') }}**
+    <p class="print-info">
+        Tanggal Cetak: {{ now()->format('d/m/Y H:i') }}
     </p>
 
     <table>
@@ -144,8 +161,8 @@
         @if(count($penjualans) > 0)
         <tfoot>
             <tr>
-                <td colspan="5" class="right" style="border-top: 3px solid var(--primary-color); background-color: var(--footer-bg); color: var(--primary-color); font-weight: bold; font-size: 11pt;">TOTAL KESELURUHAN</td>
-                <td class="right total-col" style="border-top: 3px solid var(--primary-color); background-color: var(--footer-bg);">Rp {{ number_format($grandTotal, 0, ',', '.') }}</td>
+                <td colspan="5" class="right">TOTAL KESELURUHAN</td>
+                <td class="right total-col">Rp {{ number_format($grandTotal, 0, ',', '.') }}</td>
             </tr>
         </tfoot>
         @endif

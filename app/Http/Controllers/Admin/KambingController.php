@@ -23,6 +23,7 @@ class KambingController extends Controller
 
     public function store(Request $request)
     {
+        // Hapus format Rp/kg agar bisa disimpan
         $request->merge([
             'berat' => preg_replace('/[^\d.]/', '', $request->berat),
             'harga' => preg_replace('/[^\d]/', '', $request->harga),
@@ -30,23 +31,27 @@ class KambingController extends Controller
 
         $validated = $request->validate([
             'jenis_kambing' => 'required|string|max:255',
+            'kategori' => 'required|in:Kambing Kacang,Kambing Peranakan Etawa',
             'umur' => 'required|integer',
             'berat' => 'required|numeric',
             'jenis_kelamin' => 'required|in:Jantan,Betina',
             'harga' => 'required|numeric',
             'stok' => 'required|integer|min:0',
             'deskripsi' => 'nullable|string',
-            'foto' => 'nullable|file|max:5120', // semua tipe file, max 5MB
+            // Upload file: tanpa batasi ekstensi, max 5MB
+            'foto' => 'nullable|file|max:5120',
         ]);
 
+        // Upload file jika ada
         if ($request->hasFile('foto')) {
-            $validated['foto'] = $request->file('foto')->store('foto_kambing', 'public');
+            $file = $request->file('foto');
+            $filename = time() . '_' . $file->getClientOriginalName(); // nama unik
+            $validated['foto'] = $file->storeAs('foto_kambing', $filename, 'public');
         }
 
         Kambing::create($validated);
 
-        return redirect()->route('admin.kambing.index')
-                         ->with('success', 'Data kambing berhasil ditambahkan!');
+        return redirect()->route('admin.kambing.index')->with('success', 'Data kambing berhasil ditambahkan!');
     }
 
     public function edit($id)
@@ -64,6 +69,7 @@ class KambingController extends Controller
 
         $validated = $request->validate([
             'jenis_kambing' => 'required|string|max:255',
+            'kategori' => 'required|in:Kambing Kacang,Kambing Peranakan Etawa',
             'umur' => 'required|integer',
             'berat' => 'required|numeric',
             'jenis_kelamin' => 'required|in:Jantan,Betina',
@@ -76,16 +82,18 @@ class KambingController extends Controller
         $kambing = Kambing::findOrFail($id);
 
         if ($request->hasFile('foto')) {
+            // Hapus foto lama jika ada
             if ($kambing->foto && Storage::disk('public')->exists($kambing->foto)) {
                 Storage::disk('public')->delete($kambing->foto);
             }
-            $validated['foto'] = $request->file('foto')->store('foto_kambing', 'public');
+            $file = $request->file('foto');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $validated['foto'] = $file->storeAs('foto_kambing', $filename, 'public');
         }
 
         $kambing->update($validated);
 
-        return redirect()->route('admin.kambing.index')
-                         ->with('success', 'Data kambing berhasil diperbarui!');
+        return redirect()->route('admin.kambing.index')->with('success', 'Data kambing berhasil diperbarui!');
     }
 
     public function destroy($id)
@@ -98,8 +106,7 @@ class KambingController extends Controller
 
         $kambing->delete();
 
-        return redirect()->route('admin.kambing.index')
-                         ->with('success', 'Data kambing berhasil dihapus!');
+        return redirect()->route('admin.kambing.index')->with('success', 'Data kambing berhasil dihapus!');
     }
 
     public function exportPdf()

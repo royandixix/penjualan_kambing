@@ -15,9 +15,9 @@
         }
 
         :root {
-            --primary-color: #004d99;
-            --header-bg: #eaf6ff;
-            --highlight-bg: #fffacd;
+            --primary-color: #007f3f; /* hijau utama */
+            --header-bg: #e9f9f0;    /* hijau muda */
+            --highlight-bg: #f2fff6; /* latar untuk kolom total */
         }
 
         header {
@@ -54,7 +54,7 @@
             border: 1px solid #ccc;
         }
         th, td {
-            border: 1px solid #e0e0e0;
+            border: 1px solid #d8e6da;
             padding: 8px 10px;
             text-align: left;
             vertical-align: middle;
@@ -69,7 +69,7 @@
             text-align: center;
         }
         tbody tr:nth-child(odd) {
-            background-color: #fcfcfc;
+            background-color: #f9fff9;
         }
 
         .right { text-align: right; }
@@ -80,10 +80,19 @@
             font-weight: 700;
             text-align: right;
             background-color: var(--highlight-bg);
+            color: var(--primary-color);
         }
         th.total-col {
             background-color: var(--header-bg);
-            color: #d9534f;
+            color: var(--primary-color);
+        }
+
+        tfoot td {
+            background-color: #e9f9f0;
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 11pt;
+            border-top: 3px solid var(--primary-color);
         }
 
         .print-info {
@@ -98,7 +107,7 @@
     <header>
         <h1>TERNAK KAMBING</h1>
         <p>Jl. Tani, No.62, Kec. Belopa, Kan. Luwu</p>
-        <p>Telp: 085299006996 | Email: ternakkambing@email.com (Contoh)</p>
+        <p>Telp: 085299006996 | Email: ternakkambing@email.com </p>
         <h2>LAPORAN DATA PESANAN</h2>
     </header>
     
@@ -129,8 +138,8 @@
         @if(count($pesanans) > 0)
         <tfoot>
             <tr>
-                <td colspan="4" class="right" style="border-top: 3px solid var(--primary-color); background-color: #e6f7ff; color: var(--primary-color); font-weight: bold; font-size: 11pt;">TOTAL KESELURUHAN</td>
-                <td class="right total-col" style="border-top: 3px solid var(--primary-color);">Rp {{ number_format($grandTotal, 0, ',', '.') }}</td>
+                <td colspan="4" class="right">TOTAL KESELURUHAN</td>
+                <td class="right total-col">Rp {{ number_format($grandTotal, 0, ',', '.') }}</td>
             </tr>
         </tfoot>
         @endif

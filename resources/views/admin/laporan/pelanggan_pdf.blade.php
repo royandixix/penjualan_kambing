@@ -15,8 +15,8 @@
         }
 
         :root {
-            --primary-color: #004d99;
-            --header-bg: #eaf6ff;
+            --primary-color: #007f3f; /* hijau utama */
+            --header-bg: #e9f9f0;    /* latar belakang hijau muda */
         }
 
         header {
@@ -53,7 +53,7 @@
             border: 1px solid #ccc;
         }
         th, td {
-            border: 1px solid #e0e0e0;
+            border: 1px solid #d8e6da;
             padding: 8px 10px;
             text-align: left;
             vertical-align: top;
@@ -68,7 +68,7 @@
             text-align: center;
         }
         tbody tr:nth-child(odd) {
-            background-color: #fcfcfc;
+            background-color: #f9fff9;
         }
 
         .right { text-align: right; }
@@ -87,7 +87,7 @@
     <header>
         <h1>TERNAK KAMBING</h1> 
         <p>Jl. Tani, No.62, Kec. Belopa, Kan. Luwu</p>
-        <p>Telp: 085299006996 | Email: ternakkambing@email.com (Contoh)</p>
+        <p>Telp: 085299006996 | Email: ternakkambing@email.com </p>
         <h2>LAPORAN DATA PELANGGAN</h2>
     </header>
     

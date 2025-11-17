@@ -9,13 +9,24 @@
             font-size: 11px;
             color: #333;
             margin: 10px 30px;
+            background-color: #ffffff;
+        }
+
+        :root {
+            --primary-green: #2e7d32;   /* hijau utama */
+            --light-green: #e8f5e9;     /* hijau muda */
+            --soft-green: #c8e6c9;      /* hijau lembut */
+            --pale-green: #f1f8e9;      /* hijau sangat muda */
         }
 
         h2 {
             text-align: center;
             margin-bottom: 15px;
-            color: #2c3e50;
+            color: var(--primary-green);
             text-transform: uppercase;
+            border-bottom: 3px solid var(--primary-green);
+            padding-bottom: 6px;
+            font-weight: 700;
         }
 
         table {
@@ -23,33 +34,50 @@
             border-collapse: collapse;
             table-layout: fixed;
             margin-bottom: 30px;
+            border: 1px solid #bbb;
         }
 
         th, td {
-            border: 1px solid #aaa;
+            border: 1px solid #ccc;
             padding: 6px 8px;
             text-align: center;
             vertical-align: middle;
+            font-size: 10.5px;
         }
 
         th {
-            background-color: #f0f0f0;
+            background-color: var(--light-green);
+            color: var(--primary-green);
             font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: var(--pale-green);
+        }
+
+        tbody tr:hover {
+            background-color: var(--soft-green);
+            transition: background-color 0.2s ease-in-out;
         }
 
         .img-kambing, .img-bukti {
             height: 60px;
             width: auto;
             object-fit: cover;
-            border-radius: 4px;
+            border-radius: 6px;
             display: block;
             margin: 3px auto;
+            border: 1px solid var(--soft-green);
         }
 
         .footer {
             text-align: right;
             font-size: 10px;
-            color: #777;
+            color: var(--primary-green);
+            border-top: 2px solid var(--primary-green);
+            padding-top: 5px;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -94,7 +122,9 @@
                             <span>-</span>
                         @endforelse
                     </td>
-                    <td>Rp {{ number_format($pesanan->total_harga, 0, ',', '.') }}</td>
+                    <td style="color: var(--primary-green); font-weight: bold;">
+                        Rp {{ number_format($pesanan->total_harga, 0, ',', '.') }}
+                    </td>
                     <td>{{ ucfirst($pesanan->status) }}</td>
                     <td>{{ $pesanan->metode_bayar ?? '-' }}</td>
                     <td>

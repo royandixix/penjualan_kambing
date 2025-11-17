@@ -52,7 +52,7 @@
     <h4 class="mb-4">Daftar Pelanggan</h4>
 
     <div class="mb-3">
-        <a href="{{ route('admin.pelanggan.tambah') }}" class="btn btn-primary align-items-center gap-1">
+        <a href="{{ route('admin.pelanggan.create') }}" class="btn btn-primary align-items-center gap-1">
             <i class="mdi mdi-account-plus-outline"></i> Tambah Pelanggan
         </a>
     </div>

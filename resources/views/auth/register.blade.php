@@ -85,9 +85,9 @@
 
         <div class="form-floating mb-2">
             <textarea name="alamat" class="form-control" id="floatingAlamat" placeholder="Alamat" style="height: 80px">{{ old('alamat') }}</textarea>
-            <label for="floatingAlamat">Alamat</label>
+            <label for="floatingAlamat">Alamat</label>x
         </div>
-
+<!-- 
         <div class="form-floating mb-3">
             <select name="role" class="form-select" id="floatingRole" required>
                 <option value="" disabled {{ old('role') ? '' : 'selected' }}>Pilih Peran</option>
@@ -95,7 +95,7 @@
                 <option value="Pembeli" {{ old('role') == 'Pembeli' ? 'selected' : '' }}>Pembeli</option>
             </select>
             <label for="floatingRole">Peran</label>
-        </div>
+        </div> -->
 
         <button class="w-100 btn btn-lg btn-primary" type="submit">Daftar</button>
 

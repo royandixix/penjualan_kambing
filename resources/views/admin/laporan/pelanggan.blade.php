@@ -22,8 +22,15 @@
 <div class="container-fluid">
     <h4 class="mb-4">Daftar Pelanggan</h4>
 
-    <a href="{{ route('admin.laporan.pelanggan.cetak') }}" class="btn btn-success">Export PDF</a>
-
+    <!-- Tombol Export -->
+    <div class="mb-3">
+        <a href="{{ route('admin.laporan.pelanggan.cetak') }}" class="btn btn-success">
+            <i class="bi bi-file-earmark-pdf"></i> Export PDF
+        </a>
+        <a href="{{ route('admin.laporan.pelanggan.excel') }}" class="btn btn-primary">
+            <i class="bi bi-file-earmark-spreadsheet"></i> Export Excel
+        </a>
+    </div>
 
     <div class="table-responsive">
         <table class="table table-bordered table-hover align-middle shadow-sm">

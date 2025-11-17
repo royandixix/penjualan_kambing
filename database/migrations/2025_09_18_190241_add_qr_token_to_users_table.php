@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             if (!Schema::hasColumn('users', 'qr_token')) {
-                $table->string('qr_token', 64)->nullable()->unique()->after('remember_token');
+                $table->string('qr_token', 64)->nullable()->unique()->after('alamat');
             }
         });
     }
