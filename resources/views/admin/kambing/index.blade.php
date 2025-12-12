@@ -10,6 +10,14 @@
     .btn-outline-danger:hover { background-color: #dc3545; color: #fff; }
     .btn-outline-warning, .btn-outline-danger { transition: all 0.3s ease; }
     .img-kambing { width: 100px; height: 100px; object-fit: cover; border-radius: 8px; }
+
+    /* Sticky header */
+    .table thead th {
+        position: sticky;
+        top: 0;
+        background-color: #f8f9fa;
+        z-index: 1;
+    }
 </style>
 
 <div class="container-fluid">
@@ -26,9 +34,7 @@
             <thead class="table-light">
                 <tr>
                     <th>No</th>
-                    <th>Jenis Kambing</th>
-                    <th>Kategori</th>
-                    <th>Umur</th>
+                    <th>Jenis Kambing</th> <th>Umur</th>
                     <th>Berat</th>
                     <th>Jenis Kelamin</th>
                     <th>Harga</th>
@@ -43,9 +49,7 @@
                 @foreach ($kambings as $index => $kambing)
                 <tr>
                     <td>{{ $index + 1 }}</td>
-                    <td>{{ $kambing->jenis_kambing }}</td>
-                    <td>{{ $kambing->kategori }}</td>
-                    <td>{{ $kambing->umur }} bln</td>
+                    <td>{{ $kambing->kategori }}</td> <td>{{ $kambing->umur }} bln</td>
                     <td>{{ $kambing->berat }} kg</td>
                     <td>{{ $kambing->jenis_kelamin }}</td>
                     <td>Rp {{ number_format($kambing->harga,0,',','.') }}</td>
@@ -77,7 +81,7 @@
 
         {{-- Pagination --}}
         <div class="mt-3">
-            {{ $kambings->links() }}
+            {{ $kambings->links('pagination::bootstrap-5') }}
         </div>
     </div>
 </div>
@@ -89,12 +93,14 @@
 document.addEventListener("DOMContentLoaded", function() {
     const deleteForms = document.querySelectorAll('.btn-delete-form');
 
-    deleteForms.forEach(function(form) {
+    deleteForms.forEach(function(form){
         form.addEventListener('submit', function(e){
             e.preventDefault();
+            // Ambil data dari kolom ke-2 (Jenis Kambing / Kategori)
+            const kambingName = form.closest('tr').querySelector('td:nth-child(2)').textContent; 
             Swal.fire({
                 title: 'Apakah kamu yakin?',
-                text: "Data kambing akan dihapus permanen!",
+                text: `Data kambing "${kambingName.trim()}" akan dihapus permanen!`, // menggunakan .trim() untuk membersihkan spasi
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',

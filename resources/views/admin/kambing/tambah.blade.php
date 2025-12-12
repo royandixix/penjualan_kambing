@@ -21,17 +21,11 @@
     <form action="{{ route('admin.kambing.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
-        {{-- Jenis Kambing --}}
+        {{-- Jenis Kambing (menggunakan field kategori) --}}
         <div class="form-group mb-3">
-            <label for="jenis_kambing">Jenis Kambing</label>
-            <input type="text" name="jenis_kambing" class="form-control" value="{{ old('jenis_kambing') }}" required>
-        </div>
-
-        {{-- Kategori --}}
-        <div class="form-group mb-3">
-            <label for="kategori">Kategori</label>
+            <label for="kategori">Jenis Kambing</label>
             <select name="kategori" class="form-control" required>
-                <option value="">-- Pilih Kategori --</option>
+                <option value="">-- Pilih Jenis Kambing --</option>
                 <option value="Kambing Kacang" {{ old('kategori') == 'Kambing Kacang' ? 'selected' : '' }}>Kambing Kacang</option>
                 <option value="Kambing Peranakan Etawa" {{ old('kategori') == 'Kambing Peranakan Etawa' ? 'selected' : '' }}>Kambing Peranakan Etawa</option>
             </select>
@@ -97,22 +91,30 @@
 <script>
     const beratInput = document.getElementById('berat');
     const hargaInput = document.getElementById('harga');
+    
+    // Fungsi untuk memformat harga menjadi format Rupiah (angka murni)
+    function formatRupiah(angka) {
+        let number_string = angka.replace(/[^\d]/g, '').toString();
+        return number_string ? Number(number_string).toLocaleString('id-ID') : '';
+    }
 
     // Format berat (angka saja)
     beratInput.addEventListener('input', function(e) {
+        // Hanya izinkan angka dan titik
         e.target.value = e.target.value.replace(/[^\d.]/g, '');
     });
 
-    // Format harga otomatis Rp
+    // Format harga otomatis Rupiah saat diketik
     hargaInput.addEventListener('input', function(e) {
-        let raw = e.target.value.replace(/[^\d]/g, '');
-        e.target.value = raw ? 'Rp ' + Number(raw).toLocaleString('id-ID') : '';
+        e.target.value = formatRupiah(e.target.value);
     });
 
-    // Bersihkan saat submit
+    // Bersihkan format saat submit
     document.querySelector('form').addEventListener('submit', function() {
-        beratInput.value = beratInput.value.replace(/[^\d.]/g, '');
-        hargaInput.value = hargaInput.value.replace(/[^\d]/g, '');
+        // Hapus semua karakter non-digit dan titik dari Berat
+        beratInput.value = beratInput.value.replace(/[^\d.]/g, ''); 
+        // Hapus semua karakter non-digit dari Harga
+        hargaInput.value = hargaInput.value.replace(/[^\d]/g, ''); 
     });
 </script>
 @endpush

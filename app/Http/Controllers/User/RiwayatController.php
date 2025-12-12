@@ -11,7 +11,9 @@ class RiwayatController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $riwayat = $user->pesanan()->with('kambings')->latest()->get();
+
+        // Perbaikan: relasi yang benar adalah "pesanans()" (jamak)
+        $riwayat = $user->pesanans()->with('kambings')->latest()->get();
 
         return view('user.riwayat.riwayat', compact('riwayat'));
     }

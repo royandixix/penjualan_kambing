@@ -18,7 +18,9 @@ class KambingController extends Controller
 
     public function create()
     {
-        return view('admin.kambing.tambah');
+        // Catatan: Pastikan Anda memiliki view di 'admin.kambing.tambah' 
+        // atau ganti menjadi 'admin.kambing.create' jika itu nama file Blade Anda.
+        return view('admin.kambing.tambah'); 
     }
 
     public function store(Request $request)
@@ -30,7 +32,7 @@ class KambingController extends Controller
         ]);
 
         $validated = $request->validate([
-            'jenis_kambing' => 'required|string|max:255',
+            // Hanya menggunakan 'kategori', 'jenis_kambing' dihapus dari validasi.
             'kategori' => 'required|in:Kambing Kacang,Kambing Peranakan Etawa',
             'umur' => 'required|integer',
             'berat' => 'required|numeric',
@@ -38,14 +40,13 @@ class KambingController extends Controller
             'harga' => 'required|numeric',
             'stok' => 'required|integer|min:0',
             'deskripsi' => 'nullable|string',
-            // Upload file: tanpa batasi ekstensi, max 5MB
             'foto' => 'nullable|file|max:5120',
         ]);
 
         // Upload file jika ada
         if ($request->hasFile('foto')) {
             $file = $request->file('foto');
-            $filename = time() . '_' . $file->getClientOriginalName(); // nama unik
+            $filename = time() . '_' . $file->getClientOriginalName();
             $validated['foto'] = $file->storeAs('foto_kambing', $filename, 'public');
         }
 
@@ -68,7 +69,7 @@ class KambingController extends Controller
         ]);
 
         $validated = $request->validate([
-            'jenis_kambing' => 'required|string|max:255',
+            // Hanya menggunakan 'kategori', 'jenis_kambing' dihapus dari validasi.
             'kategori' => 'required|in:Kambing Kacang,Kambing Peranakan Etawa',
             'umur' => 'required|integer',
             'berat' => 'required|numeric',

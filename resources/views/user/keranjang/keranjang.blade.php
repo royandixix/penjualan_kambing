@@ -32,8 +32,8 @@
                     <div class="col-1 text-center pt-3 ps-2">
                         <input type="checkbox" class="form-check-input item-checkbox" name="items[]" value="{{ $id }}" data-harga="{{ $item['harga'] }}">
                     </div>
-                    <div class="col-3">
-                        <img src="{{ asset('storage/' . $item['foto']) }}" class="img-fluid rounded-start shadow-sm" alt="foto" style="object-fit: cover; height: 100px;">
+                    <div class="col-3 img-3d-container" style="perspective: 1000px;">
+                        <img src="{{ asset('storage/' . $item['foto']) }}" class="img-fluid rounded-start shadow-sm img-3d" alt="foto" style="object-fit: cover; height: 100px; transition: transform 0.1s ease; transform-style: preserve-3d;">
                     </div>
                     <div class="col-4">
                         <div class="card-body py-3">
@@ -199,8 +199,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 <div>
                     <p>Transfer ke rekening berikut:</p>
                     <ul class="small">
-                        <li>BCA - 1234567890 a.n. PT Kambing Sejahtera</li>
-                        <li>Mandiri - 9876543210 a.n. PT Kambing Sejahtera</li>
+                        BRI - 170901004940508 a.n. Ternak Kamberu
                     </ul>`;
             uploadBukti.style.display = 'block';
         } else if (metode === 'cod') {
@@ -225,6 +224,29 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     updateTotal(); // hitung total awal
+
+    // Efek 3D pada gambar
+    document.querySelectorAll('.img-3d-container').forEach(container => {
+        const img = container.querySelector('.img-3d');
+        
+        container.addEventListener('mousemove', (e) => {
+            const rect = container.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            const rotateX = (y - centerY) / 5;
+            const rotateY = (centerX - x) / 5;
+            
+            img.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+        });
+        
+        container.addEventListener('mouseleave', () => {
+            img.style.transform = 'rotateX(0) rotateY(0) scale(1)';
+        });
+    });
 });
 </script>
 @endpush

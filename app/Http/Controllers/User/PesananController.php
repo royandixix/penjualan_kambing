@@ -9,10 +9,16 @@ use App\Models\DetailPesanan;
 use App\Models\Kambing;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Models\User;
+use App\Notifications\PesananDibuat;
+use App\Notifications\PesananUserNotification;
 use Carbon\Carbon;
 
 class PesananController extends Controller
 {
+    /**
+     * Halaman checkout untuk user
+     */
     public function showCheckout($id, Request $request)
     {
         $metode = $request->metode_bayar;
@@ -22,12 +28,15 @@ class PesananController extends Controller
         }
 
         $kambing = Kambing::findOrFail($id);
+
         return view('user.checkout.kambing', compact('kambing', 'metode'));
     }
 
+    /**
+     * Proses pembelian kambing oleh user
+     */
     public function beli(Request $request, $id)
     {
-        // Validasi input
         $request->validate([
             'metode_bayar' => 'required|in:qris,transfer,cod',
             'bukti_bayar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -42,7 +51,6 @@ class PesananController extends Controller
             'status' => 'pending',
             'total_harga' => $kambing->harga,
             'metode_bayar' => $request->metode_bayar,
-
         ]);
 
         // Buat detail pesanan
@@ -51,22 +59,42 @@ class PesananController extends Controller
             'kambing_id' => $kambing->id,
             'jumlah' => 1,
             'subtotal' => $kambing->harga,
+            'harga_satuan' => $kambing->harga,
         ]);
 
-        // Upload bukti bayar jika dibutuhkan
+        // Upload bukti bayar jika ada
         if (in_array($request->metode_bayar, ['qris', 'transfer']) && $request->hasFile('bukti_bayar')) {
             $file = $request->file('bukti_bayar');
             $filename = time() . '_' . $file->getClientOriginalName();
             $file->storeAs('public/bukti_bayar', $filename);
 
-            // Simpan ke kolom bukti_bayar
             $pesanan->bukti_bayar = $filename;
             $pesanan->save();
         }
 
+        /**
+         * ==============================
+         *  NOTIFIKASI UNTUK ADMIN
+         * ==============================
+         */
+        $admins = User::whereRaw('LOWER(role) = ?', ['admin'])->get();
+        foreach ($admins as $admin) {
+            $admin->notify(new PesananDibuat($pesanan));
+        }
+
+        /**
+         * ==============================
+         *  NOTIFIKASI UNTUK USER
+         * ==============================
+         */
+        Auth::user()->notify(new PesananUserNotification($pesanan));
+
         return redirect()->route('user.kambing')->with('success', 'Pesanan berhasil dibuat!');
     }
 
+    /**
+     * Tampilkan QR Code (opsional)
+     */
     public function showQR($id)
     {
         $kambing = Kambing::findOrFail($id);
@@ -78,27 +106,4 @@ class PesananController extends Controller
 
         return response()->file($path);
     }
-
-    // ADMIN - Lihat semua pesanan
-    public function index()
-    {
-        $pesanans = Pesanan::with(['user', 'detailPesanans.kambing'])->latest()->paginate(10);
-        return view('admin.pesanan.pesanan', compact('pesanans'));
-    }
-
-    // ADMIN - Update status pesanan
-    public function updateStatus(Request $request, $id)
-    {
-        $request->validate([
-            'status' => 'required|in:pending,selesai,ditolak',
-        ]);
-
-        $pesanan = Pesanan::findOrFail($id);
-        $pesanan->status = $request->status;
-        $pesanan->save();
-
-        return redirect()->route('admin.pesanan.index')->with('success', 'Status pesanan berhasil diperbarui.');
-    }
-
-    
 }

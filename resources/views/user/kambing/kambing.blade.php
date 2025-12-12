@@ -25,9 +25,10 @@
                     <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden position-relative">
                         <span class="badge bg-success position-absolute top-0 start-0 m-2">Ready Stock</span>
 
-                        <img src="{{ asset('storage/' . $kambing->foto) }}" class="card-img-top" alt="Foto Kambing"
-                            style="height: 220px; object-fit: cover; transition: transform 0.3s;"
-                            onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+                        <div class="img-3d-container" style="perspective: 1000px; overflow: hidden;">
+                            <img src="{{ asset('storage/' . $kambing->foto) }}" class="card-img-top img-3d" alt="Foto Kambing"
+                                style="height: 220px; object-fit: cover; transition: transform 0.1s ease; transform-style: preserve-3d;">
+                        </div>
 
                         <div class="card-body">
                             <h5 class="card-title text-success">{{ $kambing->nama }}</h5>
@@ -199,6 +200,29 @@
                         alert('Silakan upload bukti pembayaran terlebih dahulu!');
                     }
                 })
+            });
+
+            // Efek 3D pada gambar kambing
+            document.querySelectorAll('.img-3d-container').forEach(container => {
+                const img = container.querySelector('.img-3d');
+                
+                container.addEventListener('mousemove', (e) => {
+                    const rect = container.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    
+                    const rotateX = (y - centerY) / 8;
+                    const rotateY = (centerX - x) / 8;
+                    
+                    img.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+                });
+                
+                container.addEventListener('mouseleave', () => {
+                    img.style.transform = 'rotateX(0) rotateY(0) scale(1)';
+                });
             });
         });
     </script>

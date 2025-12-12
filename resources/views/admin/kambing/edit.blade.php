@@ -22,22 +22,16 @@
         @csrf
         @method('PUT')
 
-        {{-- Jenis Kambing --}}
+        {{-- Jenis Kambing (Menggunakan field kategori) --}}
         <div class="form-group mb-3">
-            <label for="jenis_kambing">Jenis Kambing</label>
-            <input type="text" name="jenis_kambing" class="form-control"
-                   value="{{ old('jenis_kambing', $kambing->jenis_kambing) }}" required>
-        </div>
-
-        {{-- Kategori --}}
-        <div class="form-group mb-3">
-            <label for="kategori">Kategori</label>
+            <label for="kategori">Jenis Kambing</label>
             <select name="kategori" class="form-control" required>
-                <option value="">-- Pilih Kategori --</option>
+                <option value="">-- Pilih Jenis Kambing --</option>
                 <option value="Kambing Kacang" {{ old('kategori', $kambing->kategori) == 'Kambing Kacang' ? 'selected' : '' }}>Kambing Kacang</option>
                 <option value="Kambing Peranakan Etawa" {{ old('kategori', $kambing->kategori) == 'Kambing Peranakan Etawa' ? 'selected' : '' }}>Kambing Peranakan Etawa</option>
             </select>
         </div>
+        {{-- Field 'jenis_kambing' yang lama telah dihapus --}}
 
         {{-- Umur --}}
         <div class="form-group mb-3">
@@ -64,8 +58,9 @@
         {{-- Harga --}}
         <div class="form-group mb-3">
             <label for="harga">Harga (Rp)</label>
+            {{-- Menampilkan harga dengan format Rupiah saat di-load --}}
             <input type="text" name="harga" id="harga" class="form-control"
-                   value="{{ old('harga', 'Rp ' . number_format($kambing->harga, 0, ',', '.')) }}" required>
+                   value="{{ old('harga', number_format($kambing->harga, 0, ',', '.')) }}" required>
         </div>
 
         {{-- Stok --}}
@@ -87,6 +82,7 @@
             @if ($kambing->foto)
                 <div class="mt-2">
                     <img src="{{ asset('storage/' . $kambing->foto) }}" alt="Foto Kambing" width="120" style="border-radius:8px;">
+                    <small class="form-text text-muted d-block">Kosongkan jika tidak ingin mengganti foto.</small>
                 </div>
             @endif
         </div>
@@ -105,16 +101,24 @@
 <script>
     const beratInput = document.getElementById('berat');
     const hargaInput = document.getElementById('harga');
+    
+    // Fungsi untuk memformat harga menjadi format Rupiah (angka murni)
+    function formatRupiah(angka) {
+        let number_string = angka.replace(/[^\d]/g, '').toString();
+        return number_string ? Number(number_string).toLocaleString('id-ID') : '';
+    }
 
+    // Hanya izinkan angka dan titik untuk Berat
     beratInput.addEventListener('input', function(e) {
         e.target.value = e.target.value.replace(/[^\d.]/g, '');
     });
 
+    // Format harga otomatis Rupiah saat diketik
     hargaInput.addEventListener('input', function(e) {
-        let value = e.target.value.replace(/[^\d]/g, '');
-        e.target.value = value ? 'Rp ' + Number(value).toLocaleString('id-ID') : '';
+        e.target.value = formatRupiah(e.target.value);
     });
-
+    
+    // Bersihkan format saat submit (Pastikan hanya angka yang dikirim ke server)
     document.querySelector('form').addEventListener('submit', function() {
         beratInput.value = beratInput.value.replace(/[^\d.]/g, '');
         hargaInput.value = hargaInput.value.replace(/[^\d]/g, '');
