@@ -62,7 +62,7 @@
             positionClass: "toast-bottom-right",
             timeOut: 5000,
             showMethod: "fadeIn",
-            hideMethod: "fadeOut",
+            hideMethod: "fadeOut", 
             showEasing: "swing",
             hideEasing: "linear",
             showDuration: 300,

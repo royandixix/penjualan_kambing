@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Maatwebsite\Excel\Facades\Excel; // Laravel Excel
+use Maatwebsite\Excel\Facades\Excel;
+
 use App\Exports\KambingExport;
 use App\Exports\PelangganExport;
-use App\Exports\PesananExport; // Untuk export pemesanan
-use App\Exports\PenjualanExport; // Untuk export penjualan
+use App\Exports\PesananExport;
+use App\Exports\PenjualanExport;
+
 use App\Models\Pesanan;
 use App\Models\Kambing;
 use App\Models\Pelanggan;
@@ -17,7 +19,7 @@ use App\Models\Pembayaran;
 class LaporanController extends Controller
 {
     // =======================
-    // Laporan Utama
+    // LAPORAN UTAMA
     // =======================
     public function index()
     {
@@ -34,7 +36,7 @@ class LaporanController extends Controller
     }
 
     // =======================
-    // Laporan Kambing
+    // LAPORAN KAMBING
     // =======================
     public function laporanKambing()
     {
@@ -42,6 +44,7 @@ class LaporanController extends Controller
         return view('admin.laporan.kambing', compact('kambings'));
     }
 
+    // ❌ CETAK SEMUA KAMBING (tetap ada)
     public function cetakKambing()
     {
         $kambings = Kambing::all();
@@ -50,18 +53,39 @@ class LaporanController extends Controller
         return $pdf->stream('laporan_kambing.pdf');
     }
 
+    // ✅ CETAK PER ITEM (INI YANG DOSEN MAU)
+    public function cetakKambingItem($id)
+    {
+        $kambing = Kambing::findOrFail($id);
+
+        $pdf = Pdf::loadView('admin.laporan.kambing_item_pdf', compact('kambing'))
+            ->setPaper('A4', 'portrait');
+
+        return $pdf->stream('kambing_' . $kambing->id . '.pdf');
+    }
+
     public function exportKambingExcel()
     {
         return Excel::download(new KambingExport, 'laporan_kambing.xlsx');
     }
 
     // =======================
-    // Laporan Pelanggan
+    // LAPORAN PELANGGAN
     // =======================
     public function laporanPelanggan()
     {
         $pelanggans = Pelanggan::all();
         return view('admin.laporan.pelanggan', compact('pelanggans'));
+    }
+
+    public function cetakPelangganItem($id)
+    {
+        $pelanggan = Pelanggan::findOrFail($id);
+
+        $pdf = Pdf::loadView('admin.laporan.pelanggan_item_pdf', compact('pelanggan'))
+            ->setPaper('A4', 'portrait');
+
+        return $pdf->stream('pelanggan_' . $pelanggan->nama . '.pdf');
     }
 
     public function cetakPelanggan()
@@ -78,7 +102,7 @@ class LaporanController extends Controller
     }
 
     // =======================
-    // Laporan Pembayaran
+    // LAPORAN PEMBAYARAN
     // =======================
     public function laporanPembayaranKambing()
     {
@@ -95,7 +119,7 @@ class LaporanController extends Controller
     }
 
     // =======================
-    // Laporan Pemesanan
+    // LAPORAN PEMESANAN
     // =======================
     public function laporanPemesanan()
     {
@@ -111,13 +135,26 @@ class LaporanController extends Controller
         return $pdf->stream('laporan_pemesanan.pdf');
     }
 
+    public function cetakPemesananItem($id)
+    {
+        $pesanan = Pesanan::with(['user', 'detailPesanans.kambing'])
+            ->findOrFail($id);
+
+        $pdf = Pdf::loadView(
+            'admin.laporan.pemesanan_item_pdf',
+            compact('pesanan')
+        )->setPaper('A4', 'portrait');
+
+        return $pdf->stream('pesanan_' . $pesanan->id . '.pdf');
+    }
+
     public function exportPemesananExcel()
     {
         return Excel::download(new PesananExport, 'laporan_pemesanan.xlsx');
     }
 
     // =======================
-    // Laporan Penjualan
+    // LAPORAN PENJUALAN
     // =======================
     public function laporanPenjualan()
     {
@@ -135,6 +172,22 @@ class LaporanController extends Controller
         $pdf = Pdf::loadView('admin.laporan.penjualan_pdf', compact('penjualans'))
             ->setPaper('A4', 'landscape');
         return $pdf->stream('laporan_penjualan.pdf');
+    }
+
+
+    public function cetakPenjualanItem($id)
+    {
+        $penjualan = Pesanan::with([
+            'user',
+            'detailPesanans.kambing'
+        ])->findOrFail($id);
+
+        $pdf = Pdf::loadView(
+            'admin.laporan.penjualan_item_pdf',
+            compact('penjualan')
+        )->setPaper('A4', 'portrait');
+
+        return $pdf->stream('penjualan_' . $penjualan->id . '.pdf');
     }
 
     public function exportPenjualanExcel()

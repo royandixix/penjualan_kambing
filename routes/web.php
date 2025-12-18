@@ -24,7 +24,6 @@ use App\Http\Controllers\User\RiwayatController;
 use App\Http\Controllers\User\PesananController as UserPesananController;
 use App\Http\Controllers\User\QRCodeController;
 
-
 /*
 |--------------------------------------------------------------------------
 | WEB ROUTES
@@ -53,7 +52,6 @@ Route::post('/register', [AuthController::class, 'register'])->name('register.po
 Route::post('/login/qr', [AuthController::class, 'loginWithQr'])->name('login.qr');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-
 // ====================
 // ADMIN AREA
 // ====================
@@ -61,33 +59,33 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
-    // ======= NOTIFIKASI ADMIN =======
+    // NOTIFIKASI
     Route::get('/notifikasi', [NotifikasiController::class, 'index'])->name('notifikasi');
     Route::get('/notifikasi/read/{id}', [NotifikasiController::class, 'markAsRead'])->name('notifikasi.read');
     Route::get('/notifikasi/read-all', [NotifikasiController::class, 'markAllRead'])->name('notifikasi.readAll');
     Route::delete('/notifikasi/delete/{id}', [NotifikasiController::class, 'delete'])->name('notifikasi.delete');
     Route::delete('/notifikasi/delete-all', [NotifikasiController::class, 'deleteAll'])->name('notifikasi.deleteAll');
 
-    // Kambing
+    // KAMBING
     Route::resource('kambing', AdminKambingController::class)->except(['show']);
     Route::get('kambing/export-pdf', [AdminKambingController::class, 'exportPdf'])->name('kambing.exportPdf');
 
-    // Pengguna
+    // PENGGUNA
     Route::resource('pengguna', PenggunaController::class)->except(['show']);
 
-    // Pelanggan
+    // PELANGGAN
     Route::resource('pelanggan', AdminPelangganController::class)->except(['show']);
     Route::get('pelanggan/export-pdf', [AdminPelangganController::class, 'exportPdf'])->name('pelanggan.exportPdf');
 
-    // Penjualan
+    // PENJUALAN
     Route::resource('penjualan', AdminPenjualanController::class)->except(['show']);
     Route::get('penjualan/export-pdf', [AdminPenjualanController::class, 'exportPdf'])->name('penjualan.exportPdf');
 
-    // Pesanan
+    // PESANAN
     Route::resource('pesanan', AdminPesananController::class);
     Route::put('pesanan/{id}/status', [AdminPesananController::class, 'updateStatus'])->name('pesanan.updateStatus');
 
-    // Pembayaran
+    // PEMBAYARAN
     Route::resource('pembayaran', PembayaranController::class)->except(['edit', 'update', 'destroy']);
     Route::get('pembayaran/cetak-pdf', [PembayaranController::class, 'cetakPdf'])->name('pembayaran.cetak_pdf');
 
@@ -97,34 +95,80 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::prefix('laporan')->name('laporan.')->group(function () {
 
         Route::get('/', [LaporanController::class, 'index'])->name('index');
-        Route::get('/cetak', [LaporanController::class, 'cetak'])->name('cetak');
 
-        // Kambing
+        // ===== LAPORAN KAMBING =====
         Route::get('/kambing', [LaporanController::class, 'laporanKambing'])->name('kambing');
-        Route::get('/kambing/cetak', [LaporanController::class, 'cetakKambing'])->name('kambing.cetak');
-        Route::get('/kambing/excel', [LaporanController::class, 'exportKambingExcel'])->name('kambing.excel');
 
-        // Pelanggan
+        // CETAK SEMUA KAMBING (PDF)
+        Route::get('/kambing/cetak', [LaporanController::class, 'cetakKambing'])
+            ->name('kambing.cetak');
+
+        // ✅ CETAK PER ITEM KAMBING (PDF)
+        Route::get('/kambing/cetak-item/{id}', [LaporanController::class, 'cetakKambingItem'])
+            ->name('kambing.cetak.item');
+
+        // EXCEL
+        Route::get('/kambing/excel', [LaporanController::class, 'exportKambingExcel'])
+            ->name('kambing.excel');
+
+        // PELANGGAN
         Route::get('/pelanggan', [LaporanController::class, 'laporanPelanggan'])->name('pelanggan');
         Route::get('/pelanggan/cetak', [LaporanController::class, 'cetakPelanggan'])->name('pelanggan.cetak');
         Route::get('/pelanggan/excel', [LaporanController::class, 'exportPelangganExcel'])->name('pelanggan.excel');
+        // Pelanggan
+        Route::get('/pelanggan', [LaporanController::class, 'laporanPelanggan'])
+            ->name('pelanggan');
 
-        // Pembayaran
-        Route::get('/pembayaran_kambing', [LaporanController::class, 'laporanPembayaranKambing'])->name('pembayaran_kambing');
-        Route::get('/pembayaran_kambing/cetak', [LaporanController::class, 'cetakPembayaranKambing'])->name('pembayaran_kambing.cetak');
+        Route::get('/pelanggan/cetak', [LaporanController::class, 'cetakPelanggan'])
+            ->name('pelanggan.cetak');
 
-        // Pemesanan
+        // 🔥 CETAK PER ITEM
+        Route::get('/pelanggan/cetak-item/{id}', [LaporanController::class, 'cetakPelangganItem'])
+            ->name('pelanggan.cetak.item');
+
+        Route::get('/pelanggan/excel', [LaporanController::class, 'exportPelangganExcel'])
+            ->name('pelanggan.excel');
+
+        // PEMESANAN
         Route::get('/pemesanan', [LaporanController::class, 'laporanPemesanan'])->name('pemesanan');
         Route::get('/pemesanan/cetak', [LaporanController::class, 'cetakPemesanan'])->name('pemesanan.cetak');
         Route::get('/pemesanan/excel', [LaporanController::class, 'exportPemesananExcel'])->name('pemesanan.excel');
 
-        // Penjualan
+        // Pemesanan
+        Route::get('/pemesanan', [LaporanController::class, 'laporanPemesanan'])
+            ->name('pemesanan');
+
+        Route::get('/pemesanan/cetak', [LaporanController::class, 'cetakPemesanan'])
+            ->name('pemesanan.cetak');
+
+        // 🔥 CETAK PER ITEM
+        Route::get('/pemesanan/cetak-item/{id}', [LaporanController::class, 'cetakPemesananItem'])
+            ->name('pemesanan.cetak.item');
+
+        Route::get('/pemesanan/excel', [LaporanController::class, 'exportPemesananExcel'])
+            ->name('pemesanan.excel');
+
+
+        // PENJUALAN
         Route::get('/penjualan', [LaporanController::class, 'laporanPenjualan'])->name('penjualan');
         Route::get('/penjualan/cetak', [LaporanController::class, 'cetakPenjualan'])->name('penjualan.cetak');
         Route::get('/penjualan/excel', [LaporanController::class, 'exportPenjualanExcel'])->name('penjualan.excel');
+
+        // Penjualan
+        Route::get('/penjualan', [LaporanController::class, 'laporanPenjualan'])
+            ->name('penjualan');
+
+        Route::get('/penjualan/cetak', [LaporanController::class, 'cetakPenjualan'])
+            ->name('penjualan.cetak');
+
+        Route::get('/penjualan/excel', [LaporanController::class, 'exportPenjualanExcel'])
+            ->name('penjualan.excel');
+
+        // 🔥 CETAK PER ITEM
+        Route::get('/penjualan/cetak-item/{id}', [LaporanController::class, 'cetakPenjualanItem'])
+            ->name('penjualan.cetak.item');
     });
 });
-
 
 // ====================
 // USER AREA
@@ -135,51 +179,10 @@ Route::prefix('user')->name('user.')->middleware(['auth'])->group(function () {
     Route::get('/kambing', [UserKambingController::class, 'index'])->name('kambing');
     Route::get('/kambing/{id}/beli', [UserKambingController::class, 'beli'])->name('kambing.beli');
 
-    // Keranjang
     Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang.index');
     Route::post('/keranjang/tambah/{id}', [KeranjangController::class, 'tambah'])->name('keranjang.tambah');
     Route::delete('/keranjang/{id}', [KeranjangController::class, 'hapus'])->name('keranjang.hapus');
 
-    // Checkout
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout');
-
-    // Pesanan & Riwayat
-    Route::get('/riwayat', [RiwayatController::class, 'index'])->name('riwayat');
-    Route::get('/pesanan', [UserPesananController::class, 'index'])->name('pesanan');
-    Route::get('/beli/{id}', [UserPesananController::class, 'beli'])->name('beli');
-    Route::post('/beli/{id}', [UserPesananController::class, 'beli'])->name('beli.post');
-
-    // QR Code
-    Route::get('/qrcode/{id}', [QRCodeController::class, 'generate'])->name('qrcode');
-    Route::get('/qrcode/generate/{id}', [QRCodeController::class, 'generate'])->name('qrcode.generate');
-    Route::get('/qrcode/show/{id}', [QRCodeController::class, 'show'])->name('qrcode.show');
-
-
-    // ================================
-    // 🔔 NOTIFIKASI USER (Tanpa middleware)
-    // ================================
-    Route::get('/notifikasi', function () {
-        $notifs = Auth::user()->notifications()->orderBy('created_at', 'desc')->get();
-        return view('user.notifikasi.index', compact('notifs'));
-    })->name('notifikasi.index');
-
-    Route::get('/notifikasi/read/{id}', function ($id) {
-        $notif = Auth::user()->notifications()->where('id', $id)->first();
-        if ($notif) $notif->markAsRead();
-        return back();
-    })->name('notifikasi.read');
-
-    Route::get('/notifikasi/read-all', function () {
-        Auth::user()->unreadNotifications->markAsRead();
-        return back()->with('success', 'Semua notifikasi sudah ditandai dibaca.');
-    })->name('notifikasi.readAll');
-
 });
-
-// ====================
-// FIX : ROUTE ERROR DIHAPUS
-// ====================
-// ❌ Route bermasalah:
-// Route::get('/user/notifikasi', [NotifikasiController::class, 'index'])->name('user.notifikasi');
-

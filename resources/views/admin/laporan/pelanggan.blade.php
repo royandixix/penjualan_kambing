@@ -22,13 +22,17 @@
 <div class="container-fluid">
     <h4 class="mb-4">Daftar Pelanggan</h4>
 
-    <!-- Tombol Export -->
+    {{-- CETAK SEMUA --}}
     <div class="mb-3">
-        <a href="{{ route('admin.laporan.pelanggan.cetak') }}" class="btn btn-success">
-            <i class="bi bi-file-earmark-pdf"></i> Export PDF
+        <a href="{{ route('admin.laporan.pelanggan.cetak') }}"
+           target="_blank"
+           class="btn btn-success">
+            Export PDF
         </a>
-        <a href="{{ route('admin.laporan.pelanggan.excel') }}" class="btn btn-primary">
-            <i class="bi bi-file-earmark-spreadsheet"></i> Export Excel
+
+        <a href="{{ route('admin.laporan.pelanggan.excel') }}"
+           class="btn btn-primary">
+            Export Excel
         </a>
     </div>
 
@@ -41,6 +45,7 @@
                     <th>Email</th>
                     <th>No HP</th>
                     <th>Alamat</th>
+                    <th>Aksi</th> {{-- 🔥 PENTING --}}
                 </tr>
             </thead>
             <tbody>
@@ -51,10 +56,20 @@
                     <td>{{ $user->email }}</td>
                     <td>{{ $user->no_hp }}</td>
                     <td>{{ $user->alamat }}</td>
+                    <td>
+                        {{-- CETAK PER ITEM --}}
+                        <a href="{{ route('admin.laporan.pelanggan.cetak.item', $user->id) }}"
+                           target="_blank"
+                           class="btn btn-sm btn-danger">
+                            Cetak
+                        </a>
+                    </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" class="text-center text-muted">Belum ada data pelanggan.</td>
+                    <td colspan="6" class="text-center text-muted">
+                        Belum ada data pelanggan.
+                    </td>
                 </tr>
                 @endforelse
             </tbody>
