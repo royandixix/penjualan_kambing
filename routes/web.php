@@ -24,6 +24,8 @@ use App\Http\Controllers\User\RiwayatController;
 use App\Http\Controllers\User\PesananController as UserPesananController;
 use App\Http\Controllers\User\QRCodeController;
 
+
+    use App\Http\Controllers\User\NotifikasiController as UserNotifikasiController;
 /*
 |--------------------------------------------------------------------------
 | WEB ROUTES
@@ -174,15 +176,26 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 // USER AREA
 // ====================
 Route::prefix('user')->name('user.')->middleware(['auth'])->group(function () {
-
     Route::get('/', [UserController::class, 'index'])->name('index');
+    
+    // Kambing
     Route::get('/kambing', [UserKambingController::class, 'index'])->name('kambing');
     Route::get('/kambing/{id}/beli', [UserKambingController::class, 'beli'])->name('kambing.beli');
-
+    Route::post('/kambing/{id}/beli', [UserKambingController::class, 'beli'])->name('kambing.beli.post');
+    
+    // Keranjang
     Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang.index');
     Route::post('/keranjang/tambah/{id}', [KeranjangController::class, 'tambah'])->name('keranjang.tambah');
     Route::delete('/keranjang/{id}', [KeranjangController::class, 'hapus'])->name('keranjang.hapus');
 
-    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout');
+    // Checkout
+    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+
+    // Riwayat & Notifikasi
+    Route::get('/riwayat', [RiwayatController::class, 'index'])->name('riwayat');
+    Route::get('/notifikasi', [UserNotifikasiController::class, 'index'])->name('notifikasi');
+    Route::get('/notifikasi/read-all', [UserNotifikasiController::class, 'markAllRead'])->name('notifikasi.readAll');
 });
+
+
+
