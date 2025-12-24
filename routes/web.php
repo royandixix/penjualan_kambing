@@ -169,6 +169,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         // 🔥 CETAK PER ITEM
         Route::get('/penjualan/cetak-item/{id}', [LaporanController::class, 'cetakPenjualanItem'])
             ->name('penjualan.cetak.item');
+
+            
     });
 });
 

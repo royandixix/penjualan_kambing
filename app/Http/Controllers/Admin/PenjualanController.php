@@ -66,4 +66,14 @@ class PenjualanController extends Controller
 
         return $pdf->stream('laporan_penjualan_' . date('Y-m-d') . '.pdf');
     }
+
+    public function belumBayar()
+    {
+        // Ambil data pesanan yang statusnya 'menunggu' atau 'pending'
+        $penjualans = Pesanan::with('user', 'detailPesanans.kambing')
+            ->whereIn('status', ['menunggu', 'pending'])
+            ->get();
+
+        return view('admin.penjualan.belum_bayar', compact('penjualans'));
+    }
 }
